@@ -35,3 +35,25 @@ jspm_packages
 
 # Optional REPL history
 .node_repl_history
+
+*~
+#*
+*.swp
+.DS_Store*
+.project
+._*
+.Spotlight-V100
+.Trashes
+.idea
+.idea/
+ehthumbs.db
+Thumbs.db
+bower_components
+node_modules
+dist
+jsdoc
+deployment-config.json
+.make-*
+index.html
+sftp-config.json
+

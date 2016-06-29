@@ -1,0 +1,21 @@
+{
+    "dataSetup": {
+        "catalog": {},
+        "schema": {
+            "name": "product",   
+            "createNew": true,  
+            "path": "./schema/product.json"  
+        },
+        "tables": {
+            "createNew": true
+        },
+        "entities": {
+            "createNew": true,
+            "path": "./data/product"  
+        }
+    },
+    "cleanup": true,
+    "tests": {
+        
+    }
+}
