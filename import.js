@@ -98,11 +98,11 @@ exports.setup = function(options) {
 		 	schema = new Schema({
 				url: config.url,
 				catalog: catalog,
-				schema: require(config.schema.path || './schema/' + config.schemaName  + '.json')
+				schema:  require(process.env.PWD + "/" + (config.schema.path || ('./schema/' + config.schemaName  + '.json')))
 			});
-		 }
+		}
 	}
-
+	
 	var defer = Q.defer();
 
 	var server = ermRest.ermrestFactory.getServer(config.url);
@@ -217,7 +217,7 @@ var removeSchema = function(defer, catalogId, schemaName) {
 	var schema = new Schema({
 		url: config.url,
 		catalog: catalog,
-		schema: require(config.dataSetup.schema.path || './schema/' + config.dataSetup.schemaName  + '.json')
+		schema: require(process.env.PWD + "/" + (config.dataSetup.schema.path || ('./schema/' + config.dataSetup.schemaName  + '.json')))
 	});
 	schema.remove().then(function() {	
 		console.log("Schema deleted with name " + schema.name);
@@ -239,7 +239,7 @@ var removeTables = function(defer, catalogId, schemaName) {
 	var schema = new Schema({
 		url: config.url,
 		catalog: catalog,
-		schema: require(config.dataSetup.schema.path || './schema/' + config.dataSetup.schemaName  + '.json')
+		schema: require(process.env.PWD + "/" + (config.dataSetup.schema.path || ('./schema/' + config.dataSetup.schemaName  + '.json')))
 	});
 	for (var k in schema.content.tables) {
 		var table = new Table({
@@ -368,8 +368,8 @@ var createTables = function(schema) {
  */
 var importEntities = function(tableNames, tables, schema) {
 	var defer = Q.defer(), index = -1, importedTables = []; 
-	delete require.cache[require.resolve(config.schema.path)];
-	var association = new Association({ schema: require(config.schema.path) });
+	delete require.cache[require.resolve(process.env.PWD + "/" + (config.schema.path || ('./schema/' + config.schemaName  + '.json')))];
+	var association = new Association({ schema: require(process.env.PWD + "/" + (config.schema.path || ('./schema/' + config.schemaName  + '.json'))) });
 
 	if (config.entities && config.entities.createNew) {
 		console.log("Inside import entities");
@@ -420,7 +420,7 @@ var insertEntitiesForATable = function(table, schemaName) {
 		table: table 
 	});
 	datasets.create({
-		entities: require(config.entities.path + "/" + table.name + '.json')
+		entities: require(process.env.PWD + "/" + (config.entities.path + "/" + table.name + '.json'))
 	}).then(function(entities) {
 		console.log(entities.length + " Entities of type " + table.name.toLowerCase() + " created");
 		table.entites = entities;

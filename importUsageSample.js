@@ -1,6 +1,20 @@
 var configuration = {
-	configuration: require('./config/sample.json').dataSetup,
-	url: "https://dev.isrd.isi.edu/ermrest/";,
+	configuration: {
+        "catalog": {},
+        "schema": {
+            "name": "product",   
+            "createNew": true,  
+            "path": "schema/product.json"  
+        },
+        "tables": {
+            "createNew": true
+        },
+        "entities": {
+            "createNew": true,
+            "path": "data/product"  
+        }
+	},
+	url: "https://dev.isrd.isi.edu/ermrest/",
 	authCookie: "ermrest_cookie;"
 };
 

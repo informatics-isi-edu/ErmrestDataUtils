@@ -18,12 +18,16 @@ exports.download = function (options) {
     
     if (options.schemaName) schema = schema.catalog.schemas[options.schemaName] || schema;
 
-    if (!fs.existsSync(__dirname + '/schema' + (options.folderName ? ( "/" + options.folderName) : "/"))) {
-        fs.mkdirSync(__dirname + '/schema' + (options.folderName ? ("/" + options.folderName) : "/"));
+    console.log(process.env.PWD + (options.folderName ? ( "/" + options.folderName) : "") + '/schema');
+
+    if (options.folderName) {
+      if (!fs.existsSync(process.env.PWD + (options.folderName ? ( "/" + options.folderName) : "/") )) {
+          fs.mkdirSync(process.env.PWD + (options.folderName ? ( "/" + options.folderName) : "/"));
+      }
     }
 
     // Write the schema to the file with schema name under schema folder 
-    fs.writeFile(__dirname + '/schema/' + (options.folderName ? (options.folderName + "/") : "") + schema.name + "1.json", JSON.stringify(schema.content, undefined, 2) , function(err) {
+    fs.writeFile(process.env.PWD + (options.folderName ? ( "/" + options.folderName) : "") + "/"  + schema.name + ".json", JSON.stringify(schema.content, undefined, 2) , function(err) {
       if (err) throw err;
 
       request = request.defaults({
@@ -36,15 +40,15 @@ exports.download = function (options) {
         // Fetch entities for the table and save them in the file with tableName under the schemaName folder inside data folder
         request
           .get(ermrestURL + 'catalog/' + catalogId + '/entity/' + schema.name + ':' + table)
-          .pipe(fs.createWriteStream(__dirname + '/data/' + (options.folderName ? (options.folderName + "/") : "") + schema.name + '/' + table + '.json'));
+          .pipe(fs.createWriteStream(process.env.PWD + (options.folderName ? ( "/" + options.folderName) : "") + '/data/' + table + '.json'));
       };
 
-      if (!fs.existsSync(__dirname + '/data/' + (options.folderName ? (options.folderName + "/") : ""))){
-        fs.mkdirSync(__dirname + '/data/' + (options.folderName ? (options.folderName + "/") : ""));
+      if (!fs.existsSync(process.env.PWD + (options.folderName ? ( "/" + options.folderName) : "") + '/data')) {
+        fs.mkdirSync(process.env.PWD + (options.folderName ? ( "/" + options.folderName) : "") + '/data');
       }
 
-      if (!fs.existsSync(__dirname + '/data/' + (options.folderName ? (options.folderName + "/") : "") + schema.name )){
-        fs.mkdirSync(__dirname + '/data/' + (options.folderName ? (options.folderName + "/") : "") + schema.name );
+      if (!fs.existsSync(process.env.PWD + (options.folderName ? ( "/" + options.folderName) : "") + '/data')){
+        fs.mkdirSync(process.env.PWD + (options.folderName ? ( "/" + options.folderName) : "") + '/data');
       }
 
       // Export all entities for all tables in the schema

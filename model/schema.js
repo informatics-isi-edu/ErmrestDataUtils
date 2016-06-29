@@ -5,7 +5,9 @@ var fixedEncodeURIComponent = function(str) {
 	return encodeURIComponent(str).replace(/[!'()*]/g, function(c) {
 		return '%' + c.charCodeAt(0).toString(16).toUpperCase();
 	});
-}
+};
+
+
 /* @namespace Schema
  * @desc
  * The Schema module allows you to create and delete schemas for the ERMrest API
