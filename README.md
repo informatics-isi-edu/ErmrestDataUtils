@@ -44,10 +44,10 @@ dataImport.importData(configuration).then(function(data) {
 });
 ```
 
-If you don't plan on writing your own script then you can always use the [importUsageSample.js](/test/e2e/data_setup/importUsageSample.js) and replace the configuration with your values. Then just run the file using node.js
+If you don't plan on writing your own script then you can always use the [importUsageSample.js](/importUsageSample.js) and replace the configuration with your values. Then just run the file using node.js
 
 ```sh
-node test/e2e/data_setup/importUsageSample.js
+node importUsageSample.js
 ```
 
 ### Export
@@ -72,10 +72,8 @@ dataExport.download({
 });
 ```
 
-If you don't plan on writing your own script then you can always use the [exportUsageSample.js]() and replace the *catalogId*, *schemaName* and *folderName* parameters. Then just run the file using node.js
+If you don't plan on writing your own script then you can always use the [exportUsageSample.js](/exportUsageSample.js) and replace the *catalogId*, *schemaName* and *folderName* parameters. Then just run the file using node.js
 
 ```sh
-node test/e2e/data_setup/exportUsageSample.js
+node exportUsageSample.js
 ```
-
-``` 
