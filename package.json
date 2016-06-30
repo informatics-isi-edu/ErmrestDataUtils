@@ -1,7 +1,7 @@
 {
   "name": "ermrest-data-utils",
   "description": "Allows you to import and export data for testing chaise UI. ",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "engines": [
     "node >= 0.8.16"
   ],
@@ -10,6 +10,7 @@
   "dependencies": {
     "q": "x",
     "request": "x",
-    "chance": "x"
+    "chance": "x",
+    "request-q": "x"
   }
 }

@@ -1,6 +1,6 @@
 var chance =  new (require('chance'))();
 var Q = require('q');
-var http = require('../plugin/q-request.js');
+var http = require('q-request.js');
 
 /* @namespace Table
  * @desc

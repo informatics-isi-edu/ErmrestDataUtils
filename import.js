@@ -1,4 +1,9 @@
-var http = require('./plugin/q-request.js');
+
+exports.http = require('q-request.js');
+
+delete require.cache['q-request.js'];
+
+var http = require('q-request.js');
 var Catalog = require('./model/catalog.js'); 
 var Schema = require('./model/schema.js');
 var Table = require('./model/table.js');
@@ -10,7 +15,7 @@ var ermRest = require('./model/ermrest.js');
 ermRest.configure(http, require('q'))
 
 var config = {};
-
+ 
 /**
  * @desc
  * Fetches the schemas for a catalog as well as tables for those schemas and sets 
