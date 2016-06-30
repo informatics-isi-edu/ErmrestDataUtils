@@ -1,5 +1,5 @@
 var Q = require('q');
-var http = require('q-request.js');
+var http = require('request-q');
 var Schema = require('./schema.js');
 
 /* @namespace Catalog

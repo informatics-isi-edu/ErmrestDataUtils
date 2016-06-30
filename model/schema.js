@@ -1,6 +1,6 @@
 var chance =  new (require('chance'))();
 var Q = require('q');
-var http = require('q-request.js');
+var http = require('request-q');
 var fixedEncodeURIComponent = function(str) {
 	return encodeURIComponent(str).replace(/[!'()*]/g, function(c) {
 		return '%' + c.charCodeAt(0).toString(16).toUpperCase();

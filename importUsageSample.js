@@ -15,7 +15,7 @@ var configuration = {
         }
 	},
 	url: "https://dev.isrd.isi.edu/ermrest/",
-	authCookie: "ermrest_cookie;"
+	authCookie: "ermrest=C6KFIQn2JS37CGovofWnjKfu;"
 };
 
 var dataImport = require('./import.js');

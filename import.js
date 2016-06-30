@@ -1,9 +1,9 @@
 
-exports.http = require('q-request.js');
+exports.http = require('request-q');
 
-delete require.cache['q-request.js'];
+delete require.cache['request-q'];
 
-var http = require('q-request.js');
+var http = require('request-q');
 var Catalog = require('./model/catalog.js'); 
 var Schema = require('./model/schema.js');
 var Table = require('./model/table.js');
