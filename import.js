@@ -27,7 +27,7 @@ exports.introspect = function(options) {
 	var defer = Q.defer();
 
 	config = options;
-	config.url = config.url || 'https://dev.isrd.isi.edu/ermrest/';
+	config.url = config.url || 'https://dev.isrd.isi.edu/ermrest';
 	config.authCookie = config.authCookie;
 
 	http.setDefaults({
@@ -82,7 +82,7 @@ exports.introspect = function(options) {
  */
 exports.setup = function(options) {
 	config = options;
-	config.url = config.url || 'https://dev.isrd.isi.edu/ermrest/';
+	config.url = config.url || 'https://dev.isrd.isi.edu/ermrest';
 	config.authCookie = config.authCookie;
 	config.schemaName = config.schema.name || "product";
 
@@ -132,7 +132,7 @@ exports.setup = function(options) {
 };
 
 exports.importData = function(options) {
-	var configuration = options.configuration;
+	var configuration = options.setup;
 	configuration.url = options.url;
 	configuration.authCookie = options.authCookie;
 	return exports.setup(configuration);
@@ -170,7 +170,7 @@ exports.importData = function(options) {
 exports.tear = function(options) {
 	config = options;
 	config.url = config.url || 'https://dev.isrd.isi.edu/ermrest/';
-	config.authCookie = config.dataSetup.authCookie;
+	config.authCookie = config.setup.authCookie;
 
 	var defer = Q.defer();
 
@@ -179,14 +179,14 @@ exports.tear = function(options) {
 	    json: true
 	});
 
-	if (!config.dataSetup.catalog) {
+	if (!config.setup.catalog) {
 		defer.resolve();
-	} else if (!config.dataSetup.catalog.id) {
+	} else if (!config.setup.catalog.id) {
 		removeCatalog(defer, options.catalogId);
-	} else if (config.dataSetup.schema.createNew) {
-		removeSchema(defer, options.catalogId, config.dataSetup.schema)
-	} else if (!config.dataSetup.tables.newTables.length > 0) {
-		removeTables(defer, options.catalogId, config.dataSetup.schema);
+	} else if (config.setup.schema.createNew) {
+		removeSchema(defer, options.catalogId, config.setup.schema)
+	} else if (!config.setup.tables.newTables.length > 0) {
+		removeTables(defer, options.catalogId, config.setup.schema);
 	} else {
 		defer.resolve();
 	}

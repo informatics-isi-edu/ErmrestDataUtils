@@ -34,7 +34,7 @@ Schema.prototype.create = function(schemaName) {
 	var defer = Q.defer(), self = this;
 	this.name = schemaName || this.name;
 	if (!this.catalog.id || !this.name) return defer.reject("No Catalog or Name set : create schema function"), defer.promise;
-	http.post(this.url + 'catalog/' + this.catalog.id + "/schema/" + this.name).then(function(response) {
+	http.post(this.url + '/catalog/' + this.catalog.id + "/schema/" + this.name).then(function(response) {
 		return self.createAnnotation();
 	}).then(function() {
 		defer.resolve(self);
@@ -54,7 +54,7 @@ Schema.prototype.remove = function() {
 	var defer = Q.defer(), self = this;
 	if (!this.catalog.id || !this.name) return defer.reject("No Catalog or Name set: remove schema function"), defer.promise;
 	
-	http.delete(this.url + 'catalog/' + this.catalog.id + "/schema/" + this.name).then(function() {
+	http.delete(this.url + '/catalog/' + this.catalog.id + "/schema/" + this.name).then(function() {
 		defer.resolve(self);
 	}, function(err) {
 		defer.reject(err, self);
@@ -65,7 +65,7 @@ Schema.prototype.remove = function() {
 
 var annotate = function(self, key, value) {
 	var d = Q.defer();
-	http.put(self.url + 'catalog/' + self.catalog.id + "/schema/" + self.name + "/annotation/" + fixedEncodeURIComponent(key), value).then(function(response) {
+	http.put(self.url + '/catalog/' + self.catalog.id + "/schema/" + self.name + "/annotation/" + fixedEncodeURIComponent(key), value).then(function(response) {
 		d.resolve();
 	}, function(err) {
 		d.reject(err);

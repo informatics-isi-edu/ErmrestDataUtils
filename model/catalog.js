@@ -26,7 +26,7 @@ Catalog.prototype.create = function() {
 
 	console.log("=========Inside catalog create=============");
 
-	http.post(this.url + 'catalog').then(function(response) {
+	http.post(this.url + '/catalog').then(function(response) {
 		self.content = response.data;
 		self.id = response.data.id;
 		defer.resolve(self);
@@ -73,7 +73,7 @@ Catalog.prototype.addACL = function(acl) {
 	var defer = Q.defer(), self = this;
 	if (!this.id || !acl) return defer.reject("No Id or ACL set : addACL catalog function"), defer.promise;
 	
-	http.put(this.url + 'catalog/' + this.id + "/meta/" + acl.name + "/" + acl.user).then(function(response) {
+	http.put(this.url + '/catalog/' + this.id + "/meta/" + acl.name + "/" + acl.user).then(function(response) {
 		defer.resolve(self);
 	}, function(err) {
 		defer.reject(err, self);
@@ -92,7 +92,7 @@ Catalog.prototype.remove = function() {
 	var defer = Q.defer(), self = this;
 	if (!this.id) return defer.reject("No Id set : remove catalog function"), defer.promise;
 	
-	http.delete(this.url + 'catalog/' + this.id).then(function() {
+	http.delete(this.url + '/catalog/' + this.id).then(function() {
 		defer.resolve(self);
 	}, function(err) {
 		defer.reject(err, self);
@@ -155,7 +155,7 @@ Catalog.prototype.setSchemas = function() {
 Catalog.prototype.get = function() {
 	var defer = Q.defer(), self = this;
 	if (!this.id) return defer.reject("No Id set : get catalog function"), defer.promise;
-	http.get(this.url + 'catalog/' + this.id + "/schema").then(function(response) {
+	http.get(this.url + '/catalog/' + this.id + "/schema").then(function(response) {
 		self.content = response.data;
 		self.setSchemas();
 		defer.resolve(self.defaultSchema, self);

@@ -50,7 +50,7 @@ Table.prototype.create = function(timeout) {
 
 	setTimeout(function() {
 
-		http.post(self.url + 'catalog/' + self.catalog.id + "/schema/" + self.schema.name + "/table", self.content).then(function(response) {
+		http.post(self.url + '/catalog/' + self.catalog.id + "/schema/" + self.schema.name + "/table", self.content).then(function(response) {
 			self.content = response.data;
 			self.name = self.content.table_name;
 			defer.resolve(self);
@@ -73,7 +73,7 @@ Table.prototype.remove = function() {
 	var defer = Q.defer(), self = this;
 	if (!this.catalog.id || !this.schema.name || !this.name) return defer.reject("No catalog or schema or table name set : create table function"), defer.promise;
 	
-	http.delete(this.url + 'catalog/' + this.catalog.id + "/schema/" + this.schema.name + "/table/" + this.name).then(function() {
+	http.delete(this.url + '/catalog/' + this.catalog.id + "/schema/" + this.schema.name + "/table/" + this.name).then(function() {
 		defer.resolve(self);
 	}, function(err) {
 		defer.reject(err, self);
@@ -91,7 +91,7 @@ Table.prototype.remove = function() {
 Table.prototype.addForeignKey = function(foreignKey) {
 	var defer = Q.defer(), self = this;
 	
-	http.post(this.url + 'catalog/' + this.catalog.id + "/schema/" + this.schema.name + "/table/" + this.name + "/foreignkey", foreignKey).then(function(response) {
+	http.post(this.url + '/catalog/' + this.catalog.id + "/schema/" + this.schema.name + "/table/" + this.name + "/foreignkey", foreignKey).then(function(response) {
 		self.content.foreign_keys.push(response.data);
 		defer.resolve(self);
 	}, function(err) {

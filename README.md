@@ -1,4 +1,4 @@
-## Data Import and Export Tool
+## Data Import, Export and Cleanup Tool
 
 The data import and export utility allows to create new catalog, schemas, tables and entities as well as export them.
 
@@ -8,7 +8,7 @@ To import data you need to provide a configuration that specifies the content to
 
 ```javascript
 var configuration = {
-	configuration : {
+	setup : {
 	{
 	    "catalog": {
 	        //"id": 1  //existing id of a catalog
