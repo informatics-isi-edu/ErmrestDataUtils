@@ -32,12 +32,23 @@ Entities.prototype.create = function(options) {
 		defer.resolve([]);
 		return defer.promise;
 	}
-	http.post(this.url + "/catalog/" + this.catalog.id + "/entity/" + this.schema.name + ":" + this.table.name, options.entities).then(function(response) {
+
+	var autogenColumns = [];
+	this.table.content.column_definitions.forEach(function(c) {
+		if (c.type.typename.indexOf('serial') === 0 && !options.entities[0].hasOwnProperty(c.name)) {
+			autogenColumns.push(c.name);
+		}
+	});
+
+	var autogenParam = (autogenColumns.length) ? ("?defaults=" + autogenColumns.join(',')) : "";
+
+	http.post(this.url + "/catalog/" + this.catalog.id + "/entity/" + this.schema.name + ":" + this.table.name + autogenParam, options.entities).then(function(response) {
 		self.table.entityCount = options.entities.length;
 		defer.resolve(response.data);
 	}, function(err) {
 		defer.reject(err, self);
 	});
+
 
 	return defer.promise;
 };
