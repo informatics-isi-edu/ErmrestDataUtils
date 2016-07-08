@@ -393,8 +393,7 @@ var importEntities = function(tableNames, tables, schema) {
 						cb();
 					}, function(err) {
 						console.log(err);
-						importedTables.push(name);
-						cb();
+						defer.reject(err);
 					});
 				}
 			} else {
