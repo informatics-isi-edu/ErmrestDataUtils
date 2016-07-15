@@ -15,7 +15,9 @@ var ermRest = require('./model/ermrest.js');
 ermRest.configure(http, require('q'))
 
 var config = {};
- 
+
+exports.download = require('./export.js').download;
+
 /**
  * @desc
  * Fetches the schemas for a catalog as well as tables for those schemas and sets 

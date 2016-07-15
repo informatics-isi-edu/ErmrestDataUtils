@@ -27,8 +27,9 @@ var configuration = {
 	    },
 
 	},
-	url: "https://dev.isrd.isi.edu/ermrest/",  //Ermrest API url
-	authCookie: "ermrest_cookie;" // Ermrest Authentication cookie to create data
+	url: "https://dev.isrd.isi.edu/ermrest",  //Ermrest API url
+	authCookie: "ermrest_cookie;", // Ermrest Authentication cookie to create data
+	cleanup: true
 }
 ```
 
@@ -44,6 +45,21 @@ ermrestUtils.importData(configuration).then(function(data) {
 });
 ```
 
+### Cleanup
+
+To delete the stuff created by the testcases, you should call `tear` with the same configuration that you provided for import. This will delete only that data which was created by the import function and levae other stuff intact. To allow delete, you need to set cleanup as true in your configuration as mentioned above.
+
+```javascript
+var ermrestUtils = require('ermrest-data-utils');
+ermrestUtils.tear(configuration).then(function(data) {
+	console.log("Data cleanedup");
+}, function(err) {
+	console.log("Unable to cleanup data");
+	console.dir(err);
+});
+
+```
+
 ### Export
 
 To export an existing catalog and its default schema you can use the `download` function. It will download the schema information and entities and save it in the folder that you provide.
@@ -52,7 +68,7 @@ To export an existing catalog and its default schema you can use the `download` 
 var ermrestUtils = require('ermrest-data-utils');
 ermrestUtils.download({
 	catalogId: 1,          // Mandatory
-	url: "https://dev.isrd.isi.edu/ermrest/", // Ermrest API Url from where you want to download data
+	url: "https://dev.isrd.isi.edu/ermrest", // Ermrest API Url from where you want to download data
 	authCookie: "ermrest_cookie;", // Ermrest Authentication cookie to download data
 	schemaName: "legacy",   // Optional: Will download the defailt catalog if not provided
 	folderName: "export01"  // Mandatory: To specify an explicit folder name where  the schema and data will be imported
