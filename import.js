@@ -117,7 +117,7 @@ exports.setup = function(options) {
 		console.log("Valid session found");
 		return createCatalog(catalog);
 	}, function(err) {
-		console.log("In error with no cookie:" (!config.authCookie) ? true : false);
+		console.log("In error with no cookie:" + ((!config.authCookie) ? true : false));
 		if (!config.authCookie) {
 			return createCatalog(catalog);
 		} else {
