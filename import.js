@@ -117,10 +117,12 @@ exports.setup = function(options) {
 		console.log("Valid session found");
 		return createCatalog(catalog);
 	}, function(err) {
+		console.log("In error with no cookie:" (!config.authCookie) ? true : false);
 		if (!config.authCookie) {
 			return createCatalog(catalog);
-		} 
-		return defer.reject(err || {});
+		} else {
+			return defer.reject(err || {});
+		}
 	}).then(function() {
 		return createSchema(schema);
 	}).then(function() {
