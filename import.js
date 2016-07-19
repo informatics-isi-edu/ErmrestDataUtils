@@ -116,8 +116,11 @@ exports.setup = function(options) {
 	server.session.get().then(function(response) {
 		console.log("Valid session found");
 		return createCatalog(catalog);
-	}, function() {
-		if (!config.authCookie) return createCatalog(catalog);
+	}, function(err) {
+		if (!config.authCookie) {
+			return createCatalog(catalog);
+		} 
+		return defer.reject(err || {});
 	}).then(function() {
 		return createSchema(schema);
 	}).then(function() {
