@@ -33,7 +33,7 @@ exports.introspect = function(options) {
 	config.authCookie = config.authCookie;
 
 	http.setDefaults({
-	    headers: { 'Cookie': config.authCookie },
+	    headers: { 'Cookie': config.authCookie || "a=b;" },
 	    json: true
 	});
 
@@ -89,7 +89,7 @@ exports.setup = function(options) {
 	config.schemaName = config.schema.name || "product";
 
 	http.setDefaults({
-	    headers: { 'Cookie': config.authCookie },
+	    headers: { 'Cookie': config.authCookie || "a=b;" },
 	    json: true
 	});
 
@@ -116,6 +116,8 @@ exports.setup = function(options) {
 	server.session.get().then(function(response) {
 		console.log("Valid session found");
 		return createCatalog(catalog);
+	}, function() {
+		if (!config.authCookie) return createCatalog(catalog);
 	}).then(function() {
 		return createSchema(schema);
 	}).then(function() {
@@ -177,7 +179,7 @@ exports.tear = function(options) {
 	var defer = Q.defer();
 
 	http.setDefaults({
-	    headers: { 'Cookie': config.authCookie },
+	    headers: { 'Cookie': config.authCookie || "a=b;" },
 	    json: true
 	});
 
