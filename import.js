@@ -55,14 +55,14 @@ exports.introspect = function(options) {
 
 /**
  * @desc
- * Creates new catalog if catalogId is not provided in the Catalog object of dataSetup, 
- * creates a new schema if createNew is true in the schema object of dataSetup and
- * creates new tables and foreign keys if createNew is true in the tables object of dataSetup.
- * Entities are also imported for specified tables if createNew is true in entities object of dataSetup.
+ * Creates new catalog if catalogId is not provided in the Catalog object, 
+ * creates a new schema if createNew is true in the schema object and
+ * creates new tables and foreign keys if createNew is true in the tables object.
+ * Entities are also imported for specified tables if createNew is true in entities object.
  * @returns {Promise} Returns a promise.
- * @param {options} A json Object which contains the url, optional authCookie and dataSetup configuraion object
+ * @param {options} A json Object which contains the url, optional authCookie and configuraion object
  * 
- 	"dataSetup": {
+ 	{
 	    "catalog": {
 	    	//"id": 1  //existing id of a catalog
 	    },
@@ -128,7 +128,11 @@ exports.setup = function(options) {
 	}).then(function() {
 		return createTables(schema);
 	}).then(function() {
-		console.log("=======================Catalog imported with Id : " + catalog.id + "===========================");
+		if(config.catalog.id) {
+			console.log("==========Schema " + schema.name + " imported in catalog with Id : " +catalog.id + "======================");
+		} else {
+			console.log("=======================Catalog imported with Id : " + catalog.id + "===========================");
+		}
 		if (!config.catalog) defer.resolve({ catalogId: 1, schema:  null });
 		else defer.resolve({ catalogId: catalog.id, schema: schema });
 	}, function(err) {
@@ -149,14 +153,14 @@ exports.importData = function(options) {
 
 /**
  * @desc
- * Tears/deletes new catalog if catalogId is not provided in the Catalog object of dataSetup, 
- * deletes new schemas if createNew is true in the schema object of dataSetup and
- * deletes new tables and foreign keys if createNew is true in the tables object of dataSetup.
- * Entities are also removed for specified tables if createNew is true in entities object of dataSetup.
+ * Tears/deletes new catalog if catalogId is not provided in the Catalog object of setup, 
+ * deletes new schemas if createNew is true in the schema object of setup and
+ * deletes new tables and foreign keys if createNew is true in the tables object of setup.
+ * Entities are also removed for specified tables if createNew is true in entities object of setup.
  * @returns {Promise} Returns a promise.
- * @param {options} A json Object which contains the url, optional authCookie and dataSetup configuraion object
+ * @param {options} A json Object which contains the url, optional authCookie and setup configuraion object
  * 
- 	"dataSetup": {
+ 	"setup": {
 	    "catalog": {
 	    	//"id": 1  //existing id of a catalog
 	    },
@@ -178,8 +182,8 @@ exports.importData = function(options) {
  */
 exports.tear = function(options) {
 	config = options;
-	config.url = config.url || 'https://dev.isrd.isi.edu/ermrest/';
-	config.authCookie = config.setup.authCookie;
+	config.url = config.url || 'https://dev.isrd.isi.edu/ermrest';
+	config.authCookie = config.setup.authCookie || config.authCookie;
 
 	var defer = Q.defer();
 
@@ -218,6 +222,8 @@ var removeCatalog = function(defer, catalogId) {
 		console.log("Unable to delete the catalog with id " + catalog.id);
 		defer.reject(err);
 	});
+
+	return defer.promise;
 };
 
 /**
@@ -231,15 +237,22 @@ var removeSchema = function(defer, catalogId, schemaName) {
 	var schema = new Schema({
 		url: config.url,
 		catalog: catalog,
-		schema: require(process.env.PWD + "/" + (config.dataSetup.schema.path || ('./schema/' + config.dataSetup.schemaName  + '.json')))
+		schema: require(process.env.PWD + "/" + (config.setup.schema.path || ('./schema/' + config.setup.schemaName  + '.json')))
 	});
-	schema.remove().then(function() {	
+
+	var otherDefer = Q.defer();
+
+	removeTables(otherDefer,  catalogId, schema.name).then(function() {
+		return schema.remove();
+	}).then(function() {
 		console.log("Schema deleted with name " + schema.name);
 		defer.resolve();
-	}, function(err) {
+	}, function() {
 		console.log("Unable to delete the schema with name " + schema.name);
 		defer.reject(err);
 	});
+
+	return defer.promise
 };
 
 /**
@@ -253,25 +266,57 @@ var removeTables = function(defer, catalogId, schemaName) {
 	var schema = new Schema({
 		url: config.url,
 		catalog: catalog,
-		schema: require(process.env.PWD + "/" + (config.dataSetup.schema.path || ('./schema/' + config.dataSetup.schemaName  + '.json')))
+		schema: require(process.env.PWD + "/" + (config.setup.schema.path || ('./schema/' + config.setup.schemaName  + '.json')))
 	});
+
+	delete require.cache[require.resolve(process.env.PWD + "/" + (config.setup.schema.path || ('./schema/' + config.schemaName  + '.json')))];
+	var association = new Association({ schema: require(process.env.PWD + "/" + (config.setup.schema.path || ('./schema/' + config.schemaName  + '.json'))) });
+	var tablesToBeDeleted = [],tables = {}, tableNames = [];
+
 	for (var k in schema.content.tables) {
 		var table = new Table({
 			url: config.url,
 			schema: schema,
 			table: schema.content.tables[k]
 		});
-		tables[k] = table;
-		tableNames.push(k);
-		if (!schema.content.tables[k].exists || (config.dataSetup.tables.newTables.indexOf(k) != -1)) promises.push(table.remove());
+
+		if (!schema.content.tables[k].exists || (config.setup.tables.newTables.indexOf(k) != -1)) {
+			tableNames.push(table.name);
+			tables[table.name] = table;
+		} 
 	}
 
-	Q.all(promises).then(function() {
-		console.log("Tables removed");
-		defer.resolve();
-	}, function(err) {
-		defer.reject(err);
-	});
+	var deleteTable = function() {
+		if (tablesToBeDeleted.length == 0) return defer.resolve();
+		var name = tablesToBeDeleted.shift();
+		
+		var table = tables[name];
+		table.remove().then(function() {
+			deleteTable();
+		}, function(err) {
+			console.log(err);
+			defer.reject(err);
+		});
+	};
+
+	var setDeleteOrder = function() {
+		if (tableNames.length == 0) {
+			tablesToBeDeleted = tablesToBeDeleted.reverse();
+			deleteTable();
+			return;
+		} 
+
+		var name = tableNames.shift();
+		if (association.hasAReference(name, tablesToBeDeleted)) {
+			tableNames.push(name);
+		} else {
+			tablesToBeDeleted.push(name);
+		}
+		setDeleteOrder();
+	};
+	setDeleteOrder();
+
+	return defer.promise;
 };
 
 /**
