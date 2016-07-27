@@ -1,4 +1,4 @@
-{
+{ 
   "tables": {
     "accommodation": {
       "comment": "List of different types of accommodations",
@@ -691,7 +691,7 @@
     "accommodation_image",
     "booking"
   ],
-  "comment": null,
+   "comment": "some comment",
   "annotations": {
     "tag:misd.isi.edu,2015:display": {
       "name": "accommodation"

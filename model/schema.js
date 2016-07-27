@@ -37,6 +37,8 @@ Schema.prototype.create = function(schemaName) {
 	http.post(this.url + '/catalog/' + this.catalog.id + "/schema/" + this.name).then(function(response) {
 		return self.createAnnotation();
 	}).then(function() {
+		return self.createComment();
+	}).then(function() {
 		defer.resolve(self);
 	}, function(err) {
 		defer.reject(err, self);
@@ -90,6 +92,20 @@ Schema.prototype.createAnnotation = function() {
 		defer.reject(err);
 	});
 	return defer.promise;
+};
+
+Schema.prototype.createComment = function() {
+	var d = Q.defer();
+	if (this.content.comment && this.content.comment.trim() != '') {
+		http.put({ url: this.url + '/catalog/' + this.catalog.id + "/schema/" + this.name + "/comment", body: this.content.comment, json: false }).then(function(response) {
+			d.resolve();
+		}, function(err) {
+			d.reject(err);
+		});
+	} else {
+		d.resolve();
+	}
+	return d.promise;
 };
 
 /**

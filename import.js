@@ -86,7 +86,6 @@ exports.setup = function(options) {
 	config = options;
 	config.url = config.url || 'https://dev.isrd.isi.edu/ermrest';
 	config.authCookie = config.authCookie;
-	config.schemaName = config.schema.name || "product";
 
 	http.setDefaults({
 	    headers: { 'Cookie': config.authCookie || "a=b;" },
@@ -102,6 +101,8 @@ exports.setup = function(options) {
 		});
 
 		if (config.schema) {
+			config.schemaName = config.schema.name || "product";
+
 		 	schema = new Schema({
 				url: config.url,
 				catalog: catalog,
@@ -148,6 +149,7 @@ exports.importData = function(options) {
 	var configuration = options.setup;
 	configuration.url = options.url;
 	configuration.authCookie = options.authCookie;
+	console.log(options.authCookie);
 	return exports.setup(configuration);
 };
 
@@ -338,7 +340,10 @@ var createCatalog = function(catalog) {
 			console.log("Catalog created with id " + catalog.id);
 			defer.resolve();
 		}).then(function() {
-			return catalog.addACLs([{ name: "read_user", user: "*" }, { name: "content_read_user", user : "*"}]);
+			var acls = config.catalog.acls || [];
+			acls.push({ name: "read_user", user: "*" });
+			acls.push({ name: "content_read_user", user : "*"});
+			return catalog.addACLs(acls);
 		}, function(err) {
 			defer.reject(err);
 		});

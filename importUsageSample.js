@@ -1,6 +1,6 @@
 var configuration = {
-	setup: {
-        "catalog": {},
+    setup: {
+        "catalog": { acls: [{ name: "content_write_user", user: "*"}, { name: "write_user", user : "*" }] },
         "schema": {
             "name": "product",   
             "createNew": true,  
@@ -13,21 +13,21 @@ var configuration = {
             "createNew": true,
             "path": "data/product"  
         }
-	},
-	url: "https://dev.isrd.isi.edu/ermrest",
-	authCookie: "ermrest_cookie"
+    },
+    url: "https://dev.isrd.isi.edu/ermrest",
+    authCookie: "ermrest_cookie;"
 };
 
 var dataImport = require('./import.js'), catalogId;
 
 dataImport.importData(configuration).then(function(data) {
-	console.log("Data imported with catalogId " + data.catalogId);
+    console.log("Data imported with catalogId " + data.catalogId);
     configuration.catalogId = catalogId = data.catalogId;
-    return dataImport.tear(configuration);
+    //return dataImport.tear(configuration);
 }).then(function() {
     console.log("Cleanup Done");
 }, function(err) {
-	if(!catalogId) console.log("Unable to import data");
-	else console.log("unable to delete catalog with id " + catalogId);
+    if(!catalogId) console.log("Unable to import data");
+    else console.log("unable to delete catalog with id " + catalogId);
     console.dir(err);
 });
