@@ -200,7 +200,7 @@ exports.tear = function(options) {
 		removeCatalog(defer, options.catalogId);
 	} else if (config.setup.schema.createNew) {
 		removeSchema(defer, options.catalogId, config.setup.schema)
-	} else if (!config.setup.tables.newTables.length > 0) {
+	} else if (!config.setup.tables.newTables || !config.setup.tables.newTables.length > 0) {
 		removeTables(defer, options.catalogId, config.setup.schema);
 	} else {
 		defer.resolve();
