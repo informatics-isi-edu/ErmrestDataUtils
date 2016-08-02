@@ -249,7 +249,7 @@ var removeSchema = function(defer, catalogId, schemaName) {
 	}).then(function() {
 		console.log("Schema deleted with name " + schema.name);
 		defer.resolve();
-	}, function() {
+	}, function(err) {
 		console.log("Unable to delete the schema with name " + schema.name);
 		defer.reject(err);
 	});
