@@ -37,6 +37,8 @@ Entities.prototype.create = function(options) {
 	this.table.content.column_definitions.forEach(function(c) {
 		if (c.type.typename.indexOf('serial') === 0 && !options.entities[0].hasOwnProperty(c.name)) {
 			autogenColumns.push(c.name);
+		} else if (c.default !== null && c.default !== undefined) {
+			autogenColumns.push(c.name);
 		}
 	});
 
