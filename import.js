@@ -340,9 +340,7 @@ var createCatalog = function(catalog) {
 			console.log("Catalog created with id " + catalog.id);
 			defer.resolve();
 		}).then(function() {
-			var acls = config.catalog.acls || [];
-			acls.push({ name: "read_user", user: "*" });
-			acls.push({ name: "content_read_user", user : "*"});
+			var acls = config.catalog.acls || [{ name: "read_user", user: "*" }, { name: "content_read_user", user : "*"}];
 			return catalog.addACLs(acls);
 		}, function(err) {
 			defer.reject(err);
