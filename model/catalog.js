@@ -24,6 +24,11 @@ var Catalog = function(options) {
 Catalog.prototype.create = function() {
 	var defer = Q.defer(), self = this;
 
+	if (this.id) {
+		defer.resolve(this);
+		return defer.promise;
+	}
+
 	console.log("=========Inside catalog create=============");
 
 	http.post(this.url + '/catalog').then(function(response) {

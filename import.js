@@ -329,19 +329,26 @@ var removeTables = function(defer, catalogId, schemaName) {
  */
 var createCatalog = function(catalog) {
 	var defer = Q.defer();
-
+	var isNew = true;
+	var acls = config.catalog.acls;
 	if (!catalog) {
 		defer.resolve();
-	} else if (catalog.id) {
+	} else if (catalog.id && !config.catalog.acls) {
 		console.log("Catalog with id " + catalog.id + " already exists.");
 		defer.resolve();
 	} else {
+		if (catalog.id) isNew = false;
 		catalog.create().then(function() {
-			console.log("Catalog created with id " + catalog.id);
-			defer.resolve();
-		}).then(function() {
-			var acls = config.catalog.acls || [{ name: "read_user", user: "*" }, { name: "content_read_user", user : "*"}];
+			
+			if (isNew) console.log("Catalog created with id " + catalog.id);
+			else console.log("Catalog with id " + catalog.id + " already exists.");
+
+			if (!acls && isNew) acls = [{ name: "read_user", user: "*" }, { name: "content_read_user", user : "*"}];
+			
 			return catalog.addACLs(acls);
+		}).then(function() {
+			console.log("ACLS added: " + JSON.stringify(acls));
+			defer.resolve();
 		}, function(err) {
 			defer.reject(err);
 		});
