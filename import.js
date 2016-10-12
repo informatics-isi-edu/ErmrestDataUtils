@@ -513,9 +513,11 @@ var createForeignKeys = function(schema) {
 	for (var k in schema.tables) {
 		var table = schema.tables[k];
 		if (config.tables.createNew == true && (!schema.content.tables[k].exists || (config.tables.newTables.indexOf(k) != -1))) {
-			table.foreignKeys.forEach(function(fk) {
-				promises.push(table.addForeignKey(fk));
-			});
+			if (table.foreignKeys) {
+				table.foreignKeys.forEach(function(fk) {
+					promises.push(table.addForeignKey(fk));
+				});
+			}
 		}
 	}
 
