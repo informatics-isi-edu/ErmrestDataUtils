@@ -34,7 +34,8 @@ exports.introspect = function(options) {
 
 	http.setDefaults({
 	    headers: { 'Cookie': config.authCookie || "a=b;" },
-	    json: true
+	    json: true,
+	    _retriable_error_codes : [0,500,503]
 	});
 
 	var catalog = new Catalog({ 
@@ -89,7 +90,8 @@ exports.setup = function(options) {
 
 	http.setDefaults({
 	    headers: { 'Cookie': config.authCookie || "a=b;" },
-	    json: true
+	    json: true,
+	    _retriable_error_codes : [0,500,503]
 	});
 
 	var schema, catalog;
@@ -191,7 +193,8 @@ exports.tear = function(options) {
 
 	http.setDefaults({
 	    headers: { 'Cookie': config.authCookie || "a=b;" },
-	    json: true
+	    json: true,
+	    _retriable_error_codes : [0,500,503]
 	});
 
 	if (!config.setup.catalog) {
