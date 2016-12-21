@@ -53,6 +53,7 @@ Table.prototype.create = function(timeout) {
 		http.post(self.url + '/catalog/' + self.catalog.id + "/schema/" + self.schema.name + "/table", self.content).then(function(response) {
 			self.content = response.data;
 			self.name = self.content.table_name;
+			console.log("Table " + self.content.table_name + " created");
 			defer.resolve(self);
 		}, function(err) {
 			defer.reject(err, self);
@@ -74,6 +75,7 @@ Table.prototype.remove = function() {
 	if (!this.catalog.id || !this.schema.name || !this.name) return defer.reject("No catalog or schema or table name set : create table function"), defer.promise;
 	
 	http.delete(this.url + '/catalog/' + this.catalog.id + "/schema/" + this.schema.name + "/table/" + this.name).then(function() {
+		console.log("Table " + self.content.table_name + " deleted");
 		defer.resolve(self);
 	}, function(err) {
 		defer.reject(err, self);
