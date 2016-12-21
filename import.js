@@ -512,24 +512,36 @@ var insertEntitiesForATable = function(table, schemaName) {
 var createForeignKeys = function(schema) {
 	var defer = Q.defer();
 	
-	var promises = [];
-	for (var k in schema.tables) {
-		var table = schema.tables[k];
-		if (config.tables.createNew == true && (!schema.content.tables[k].exists || (config.tables.newTables.indexOf(k) != -1))) {
-			if (table.foreignKeys) {
+	var i = 0, keys = Object.keys(schema.tables);
+
+	var createForeignKey = function() {
+		if (i == keys.length) {
+			defer.resolve();
+		} else {
+			var key = keys[i];
+			var table = schema.tables[key];
+			if (config.tables.createNew == true && (!schema.content.tables[key].exists || (config.tables.newTables.indexOf(key) != -1)) && table.foreignKeys) {
+				i++;
+				var promises = [];
 				table.foreignKeys.forEach(function(fk) {
 					promises.push(table.addForeignKey(fk));
 				});
+
+				Q.all(promises).then(function() {
+					console.log("Foreign keys for table " + table.name + " created")
+					createForeignKey();
+				}, function(err) {
+					console.log(err);
+					defer.reject(err);
+				});
+			} else {
+				i++;
+				createForeignKey();
 			}
 		}
 	}
 
-    Q.all(promises).then(function() {
-    	defer.resolve();
-    }, function(err) {
-    	console.log(err);
-    	defer.reject(err);
-    });
+	createForeignKey();
 
     return defer.promise;
 };	
