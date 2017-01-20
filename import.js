@@ -121,6 +121,7 @@ exports.setup = function(options) {
 		return createCatalog(catalog);
 	}, function(err) {
 		console.log("In error with no cookie:" + ((!config.authCookie) ? true : false));
+		console.log(err ? (err.message + "\n" + err.stack) : "Cannot find session");
 		if (!config.authCookie) {
 			return createCatalog(catalog);
 		} else {
