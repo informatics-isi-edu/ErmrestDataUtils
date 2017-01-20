@@ -115,9 +115,8 @@ exports.setup = function(options) {
 	
 	var defer = Q.defer();
 
-	var server = ermRest.ermrestFactory.getServer(config.url);
-	server.session.get().then(function(response) {
-		console.log("Valid session found");
+	http.get(config.url.replace('ermrest', 'authn') + "/session").then(function(response) {
+   		console.log("Valid session found");
 		return createCatalog(catalog);
 	}, function(err) {
 		console.log("In error with no cookie:" + ((!config.authCookie) ? true : false));
