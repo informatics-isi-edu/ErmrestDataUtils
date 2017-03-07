@@ -1,11 +1,7 @@
 var chance =  new (require('chance'))();
 var Q = require('q');
 var http = require('request-q');
-var fixedEncodeURIComponent = function(str) {
-	return encodeURIComponent(str).replace(/[!'()*]/g, function(c) {
-		return '%' + c.charCodeAt(0).toString(16).toUpperCase();
-	});
-};
+var utils = require('./utils.js');
 
 
 /* @namespace Schema
@@ -34,7 +30,7 @@ Schema.prototype.create = function(schemaName) {
 	var defer = Q.defer(), self = this;
 	this.name = schemaName || this.name;
 	if (!this.catalog.id || !this.name) return defer.reject("No Catalog or Name set : create schema function"), defer.promise;
-	http.post(this.url + '/catalog/' + this.catalog.id + "/schema/" + this.name).then(function(response) {
+	http.post(this.url + '/catalog/' + this.catalog.id + "/schema/" + utils._fixedEncodeURIComponent(this.name)).then(function(response) {
 		return self.createAnnotation();
 	}).then(function() {
 		return self.createComment();
@@ -56,7 +52,7 @@ Schema.prototype.remove = function() {
 	var defer = Q.defer(), self = this;
 	if (!this.catalog.id || !this.name) return defer.reject("No Catalog or Name set: remove schema function"), defer.promise;
 	
-	http.delete(this.url + '/catalog/' + this.catalog.id + "/schema/" + this.name).then(function() {
+	http.delete(this.url + '/catalog/' + this.catalog.id + "/schema/" + utils._fixedEncodeURIComponent(this.name)).then(function() {
 		defer.resolve(self);
 	}, function(err) {
 		defer.reject(err, self);
@@ -67,7 +63,7 @@ Schema.prototype.remove = function() {
 
 var annotate = function(self, key, value) {
 	var d = Q.defer();
-	http.put(self.url + '/catalog/' + self.catalog.id + "/schema/" + self.name + "/annotation/" + fixedEncodeURIComponent(key), value).then(function(response) {
+	http.put(self.url + '/catalog/' + self.catalog.id + "/schema/" + utils._fixedEncodeURIComponent(self.name) + "/annotation/" + utils._fixedEncodeURIComponent(key), value).then(function(response) {
 		d.resolve();
 	}, function(err) {
 		d.reject(err);
@@ -97,7 +93,7 @@ Schema.prototype.createAnnotation = function() {
 Schema.prototype.createComment = function() {
 	var d = Q.defer();
 	if (this.content.comment && this.content.comment.trim() != '') {
-		http.put({ url: this.url + '/catalog/' + this.catalog.id + "/schema/" + this.name + "/comment", body: this.content.comment, json: false }).then(function(response) {
+		http.put({ url: this.url + '/catalog/' + this.catalog.id + "/schema/" + utils._fixedEncodeURIComponent(this.name) + "/comment", body: this.content.comment, json: false }).then(function(response) {
 			d.resolve();
 		}, function(err) {
 			d.reject(err);

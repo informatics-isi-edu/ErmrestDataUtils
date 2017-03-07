@@ -1,6 +1,7 @@
 var chance =  new (require('chance'))();
 var Q = require('q');
 var http = require('request-q');
+var utils = require('./utils.js');
 
 /* @namespace Entities
  * @Entities
@@ -22,16 +23,16 @@ var create = function(entity, self) {
 	self.table.content.column_definitions.forEach(function(c) {
 		if (!entity.hasOwnProperty(c.name)) {
 			if (c.type.typename.indexOf('serial') === 0 && !entity.hasOwnProperty(c.name)) {
-				autogenColumns.push(c.name);
+				autogenColumns.push(utils._fixedEncodeURIComponent(c.name));
 			} else if (c.default !== null && c.default !== undefined) {
-				autogenColumns.push(c.name);
+				autogenColumns.push(utils._fixedEncodeURIComponent(c.name));
 			}
 		}
 	});
 
 	var autogenParam = (autogenColumns.length) ? ("?defaults=" + autogenColumns.join(',')) : "";
 
-	http.post(self.url + "/catalog/" + self.catalog.id + "/entity/" + self.schema.name + ":" + self.table.name + autogenParam, [entity]).then(function(response) {
+	http.post(self.url + "/catalog/" + self.catalog.id + "/entity/" + utils._fixedEncodeURIComponent(self.schema.name) + ":" + utils._fixedEncodeURIComponent(self.table.name) + autogenParam, [entity]).then(function(response) {
 		defer.resolve(response.data);
 	}, function(err) {
 		defer.reject(err, self);

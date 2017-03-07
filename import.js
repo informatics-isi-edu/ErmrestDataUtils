@@ -415,14 +415,14 @@ var createTables = function(schema) {
 		Q.all(promises).then(function() {
 			console.log("Tables created ");
 			schema.tables = tables;
-			// Add foreign keys in the table
-			return createForeignKeys(schema);
-		}).then(function() {
-			console.log("Foreign Keys created");
 			// Import data for following tables in order for managing foreign key management
 			return importEntities(tableNames, tables, schema);
 		}).then(function() {
 			console.log("Data imported");
+			// Add foreign keys in the table
+			return createForeignKeys(schema);
+		}).then(function() {
+			console.log("Foreign Keys created");
 			defer.resolve();
 		}, function(err) {
 			defer.reject(err);
@@ -441,8 +441,7 @@ var createTables = function(schema) {
 var importEntities = function(tableNames, tables, schema) {
 	var defer = Q.defer(), index = -1, importedTables = []; 
 	delete require.cache[require.resolve(process.env.PWD + "/" + (config.schema.path || ('./schema/' + config.schemaName  + '.json')))];
-	var association = new Association({ schema: require(process.env.PWD + "/" + (config.schema.path || ('./schema/' + config.schemaName  + '.json'))) });
-
+	
 	if (config.entities && config.entities.createNew) {
 		console.log("Inside import entities");
 		var cb = function() {
@@ -450,19 +449,14 @@ var importEntities = function(tableNames, tables, schema) {
 			var name = tableNames.shift();
 			var table = tables[name];
 			if (!table.exists || config.entities.newTables.indexOf(name) != -1) {
-				if (association.hasAReference(name, importedTables)) {
-					tableNames.push(name);
+				var table = tables[name];
+				insertEntitiesForATable(table, schema.name).then(function() {
+					importedTables.push(name);
 					cb();
-				} else {
-					var table = tables[name];
-					insertEntitiesForATable(table, schema.name).then(function() {
-						importedTables.push(name);
-						cb();
-					}, function(err) {
-						console.log(err);
-						defer.reject(err);
-					});
-				}
+				}, function(err) {
+					console.log(err);
+					defer.reject(err);
+				});
 			} else {
 				importedTables.push(name);
 				cb();

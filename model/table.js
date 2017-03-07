@@ -1,6 +1,7 @@
 var chance =  new (require('chance'))();
 var Q = require('q');
 var http = require('request-q');
+var utils = require('./utils.js');
 
 /* @namespace Table
  * @desc
@@ -50,7 +51,7 @@ Table.prototype.create = function(timeout) {
 
 	setTimeout(function() {
 
-		http.post(self.url + '/catalog/' + self.catalog.id + "/schema/" + self.schema.name + "/table", self.content).then(function(response) {
+		http.post(self.url + '/catalog/' + self.catalog.id + "/schema/" + utils._fixedEncodeURIComponent(self.schema.name) + "/table", self.content).then(function(response) {
 			self.content = response.data;
 			self.name = self.content.table_name;
 			console.log("Table " + self.content.table_name + " created");
@@ -74,7 +75,7 @@ Table.prototype.remove = function() {
 	var defer = Q.defer(), self = this;
 	if (!this.catalog.id || !this.schema.name || !this.name) return defer.reject("No catalog or schema or table name set : create table function"), defer.promise;
 	
-	http.delete(this.url + '/catalog/' + this.catalog.id + "/schema/" + this.schema.name + "/table/" + this.name).then(function() {
+	http.delete(this.url + '/catalog/' + this.catalog.id + "/schema/" + utils._fixedEncodeURIComponent(this.schema.name) + "/table/" + utils._fixedEncodeURIComponent(this.name)).then(function() {
 		console.log("Table " + self.content.table_name + " deleted");
 		defer.resolve(self);
 	}, function(err) {
@@ -93,7 +94,7 @@ Table.prototype.remove = function() {
 Table.prototype.addForeignKey = function(foreignKey) {
 	var defer = Q.defer(), self = this;
 	
-	http.post(this.url + '/catalog/' + this.catalog.id + "/schema/" + this.schema.name + "/table/" + this.name + "/foreignkey", foreignKey).then(function(response) {
+	http.post(this.url + '/catalog/' + this.catalog.id + "/schema/" + utils._fixedEncodeURIComponent(this.schema.name) + "/table/" + utils._fixedEncodeURIComponent(this.name) + "/foreignkey", foreignKey).then(function(response) {
 		self.content.foreign_keys.push(response.data);
 		defer.resolve(self);
 	}, function(err) {
