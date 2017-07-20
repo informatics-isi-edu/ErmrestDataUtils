@@ -2,23 +2,23 @@ var configuration = {
     setup: {
         "catalog": { acls: [{ name: "content_write_user", user: "*"}, { name: "write_user", user : "*" }] },
         "schema": {
-            "name": "product",   
+            "name": "reference",   
             "createNew": true,  
-            "path": "schema/product.json"  
+            "path": "schema/myschema.json"  
         },
         "tables": {
             "createNew": true
         },
         "entities": {
             "createNew": true,
-            "path": "data/product"  
+            "path": "data/product/"  
         }
     },
     url: "https://dev.isrd.isi.edu/ermrest",
-    authCookie: "ermrest_cookie;"
+    authCookie: process.env.AUTH_COOKIE
 };
 
-var dataImport = require('./import.js'), catalogId;
+var dataImport = require('./import.js'), catalogId; 
 
 dataImport.importData(configuration).then(function(data) {
     console.log("Data imported with catalogId " + data.catalogId);
