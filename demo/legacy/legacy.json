@@ -1,0 +1,17 @@
+{
+  "comment": null,
+  "tables": {},
+  "annotations": {
+    "tag:misd.isi.edu,2015:display": {
+      "name_style": {
+        "underline_space": true,
+        "title_case": true
+      }
+    }
+  },
+  "schema_name": "legacy",
+  "rights": {
+    "owner": false,
+    "create": false
+  }
+}

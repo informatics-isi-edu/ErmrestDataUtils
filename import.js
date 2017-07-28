@@ -346,11 +346,16 @@ var createCatalog = function(catalog) {
 			if (isNew) console.log("Catalog created with id " + catalog.id);
 			else console.log("Catalog with id " + catalog.id + " already exists.");
 
-			if (!acls && isNew) acls = [{ name: "read_user", user: "*" }, { name: "content_read_user", user : "*"}];
-			
-			return catalog.addACLs(acls);
+			if ((typeof acls !== 'object') || Object.keys(acls).length === 0) {
+				defer.resolve();
+			} else {
+				console.log("Updating catalog ACLs...");
+				return catalog.addACLs(acls);
+			}
 		}).then(function() {
-			console.log("ACLS added: " + JSON.stringify(acls));
+			if ((typeof acls === 'object') && Object.keys(acls).length !== 0) {
+				console.log("ACLS added: " + JSON.stringify(acls));
+			}
 			defer.resolve();
 		}, function(err) {
 			defer.reject(err);
