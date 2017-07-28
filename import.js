@@ -334,6 +334,8 @@ var createCatalog = function(catalog) {
 	var defer = Q.defer();
 	var isNew = true;
 	var acls = config.catalog.acls;
+	var hasValidACLs = (acls.constructor === Object)  && Object.keys(acls).length !== 0;
+	
 	if (!catalog) {
 		defer.resolve();
 	} else if (catalog.id && !config.catalog.acls) {
@@ -346,14 +348,13 @@ var createCatalog = function(catalog) {
 			if (isNew) console.log("Catalog created with id " + catalog.id);
 			else console.log("Catalog with id " + catalog.id + " already exists.");
 
-			if ((typeof acls !== 'object') || Object.keys(acls).length === 0) {
-				defer.resolve();
-			} else {
+			if (hasValidACLs) {
 				console.log("Updating catalog ACLs...");
 				return catalog.addACLs(acls);
 			}
+			defer.resolve();
 		}).then(function() {
-			if ((typeof acls === 'object') && Object.keys(acls).length !== 0) {
+			if (hasValidACLs) {
 				console.log("ACLS added: " + JSON.stringify(acls));
 			}
 			defer.resolve();
