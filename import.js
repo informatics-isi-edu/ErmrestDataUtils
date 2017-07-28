@@ -334,7 +334,7 @@ var createCatalog = function(catalog) {
 	var defer = Q.defer();
 	var isNew = true;
 	var acls = config.catalog.acls;
-	var hasValidACLs = (acls.constructor === Object)  && Object.keys(acls).length !== 0;
+	var hasValidACLs = (typeof acls === "object") && (acls.constructor === Object)  && Object.keys(acls).length !== 0;
 	
 	if (!catalog) {
 		defer.resolve();
