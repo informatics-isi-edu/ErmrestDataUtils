@@ -1,0 +1,126 @@
+{
+    "schema_name": "schema",
+    "tables": {
+        "reference": {
+            "table_name": "reference",
+            "schema_name": "schema",
+            "kind": "table",
+            "keys": [{
+                "unique_columns": ["id"]
+            }],
+            "column_definitions": [{
+                "name": "id",
+                "nullok": false,
+                "type": {
+                    "typename": "serial"
+                }
+            }],
+            "annotations": {
+                "tag:isrd.isi.edu,2016:visible-columns": {
+                    "*": [
+                        "id", ["schema", "inbound_fk_to_refernce"],
+                        "id", ["schema", "inbound_fk_to_refernce_new"]
+
+                    ]
+                }
+            }
+        },
+        "inbound_related": {
+            "table_name": "inbound_related",
+            "schema_name": "schema",
+            "kind": "table",
+            "keys": [{
+                "unique_columns": ["id_col"]
+            }],
+            "foreign_keys": [{
+                "names": [
+                    ["schema", "inbound_fk_to_refernce"]
+                ],
+                "foreign_key_columns": [{
+                        "table_name": "inbound_related",
+                        "schema_name": "schema",
+                        "column_name": "fk_to_reference"
+                    }
+                ],
+                "referenced_columns": [{
+                    "table_name": "reference",
+                    "schema_name": "schema",
+                    "column_name": "id"
+                }]
+            }],
+            "column_definitions": [{
+                    "name": "id_col",
+                    "nullok": false,
+                    "type": {
+                        "typename": "serial"
+                    }
+                },
+                {
+                    "name": "fk_to_reference",
+                    "type": {
+                        "typename": "serial"
+                    }
+                },
+                {
+                    "name": "fk2_to_reference",
+                    "type": {
+                        "typename": "text"
+                    }
+                }
+            ]
+        },
+        "inbound_related_new": {
+            "table_name": "inbound_related_new",
+            "schema_name": "schema",
+            "kind": "table",
+            "keys": [{
+                "unique_columns": ["id_col"]
+            }],
+            "foreign_keys": [{
+                "names": [
+                    ["schema", "inbound_fk_to_refernce_new"]
+                ],
+                "foreign_key_columns": [{
+                        "table_name": "inbound_related_new",
+                        "schema_name": "schema",
+                        "column_name": "fk_to_reference_new"
+                    }
+                ],
+                "referenced_columns": [{
+                    "table_name": "reference",
+                    "schema_name": "schema",
+                    "column_name": "id"
+                }]
+            }],
+            "column_definitions": [{
+                    "name": "id_col",
+                    "nullok": false,
+                    "type": {
+                        "typename": "serial"
+                    }
+                },
+                {
+                    "name": "fk_to_reference_new",
+                    "type": {
+                        "typename": "serial"
+                    }
+                },
+                {
+                    "name": "fk2_to_reference_new",
+                    "type": {
+                        "typename": "text"
+                    }
+                }
+            ],
+            "annotations": {
+            "tag:isrd.isi.edu,2016:table-display": {
+                 "*": {
+                     "separator_markdown": " ",
+                     "row_markdown_pattern": "* **{{fk_to_reference_new}}**{.vocab} **{{fk2_to_reference_new}}**{.vocab}"
+                 }
+               }
+           }
+        }
+    }
+
+}

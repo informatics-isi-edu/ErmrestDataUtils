@@ -1,21 +1,21 @@
 var configuration = {
     setup: {
-        "catalog": { acls: [{ name: "content_write_user", user: "*"}, { name: "write_user", user : "*" }] },
+        "catalog": { acls: [] },
         "schema": {
-            "name": "product",   
-            "createNew": true,  
-            "path": "schema/product.json"  
+            "name": "schema",
+            "createNew": true,
+            "path": "schema/test1.json"
         },
         "tables": {
             "createNew": true
         },
         "entities": {
             "createNew": true,
-            "path": "data/product"  
+            "path": "data/schema"
         }
     },
     url: "https://dev.isrd.isi.edu/ermrest",
-    authCookie: "ermrest_cookie;"
+    authCookie: process.env.AUTH_COOKIE
 };
 
 var dataImport = require('./import.js'), catalogId;
@@ -23,7 +23,7 @@ var dataImport = require('./import.js'), catalogId;
 dataImport.importData(configuration).then(function(data) {
     console.log("Data imported with catalogId " + data.catalogId);
     configuration.catalogId = catalogId = data.catalogId;
-    //return dataImport.tear(configuration);
+    // return dataImport.tear(configuration);
 }).then(function() {
     console.log("Cleanup Done");
 }, function(err) {
