@@ -334,6 +334,8 @@ var createCatalog = function(catalog) {
 	var defer = Q.defer();
 	var isNew = true;
 	var acls = config.catalog.acls;
+	var hasValidACLs = (typeof acls === "object") && (acls.constructor === Object)  && Object.keys(acls).length !== 0;
+	
 	if (!catalog) {
 		defer.resolve();
 	} else if (catalog.id && !config.catalog.acls) {
@@ -346,11 +348,15 @@ var createCatalog = function(catalog) {
 			if (isNew) console.log("Catalog created with id " + catalog.id);
 			else console.log("Catalog with id " + catalog.id + " already exists.");
 
-			if (!acls && isNew) acls = [{ name: "read_user", user: "*" }, { name: "content_read_user", user : "*"}];
-			
-			return catalog.addACLs(acls);
+			if (hasValidACLs) {
+				console.log("Updating catalog ACLs...");
+				return catalog.addACLs(acls);
+			}
+			defer.resolve();
 		}).then(function() {
-			console.log("ACLS added: " + JSON.stringify(acls));
+			if (hasValidACLs) {
+				console.log("ACLS added: " + JSON.stringify(acls));
+			}
 			defer.resolve();
 		}, function(err) {
 			defer.reject(err);

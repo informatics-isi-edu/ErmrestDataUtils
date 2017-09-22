@@ -19,7 +19,9 @@
                 "tag:isrd.isi.edu,2016:visible-columns": {
                     "*": [
                         "id", ["schema", "inbound_fk_to_refernce"],
-                        "id", ["schema", "inbound_fk_to_refernce_new"]
+                        "id", ["schema", "inbound_fk_to_refernce_new"],
+                        "id", ["schema", "inbound_related_entry_1"],
+                        "id", ["schema", "fk_inb_test"]
 
                     ]
                 }
@@ -67,7 +69,14 @@
                         "typename": "text"
                     }
                 }
-            ]
+            ],
+            "annotations": {
+			 "tag:isrd.isi.edu,2016:table-display": {
+              "compact/brief/inline": {
+                
+              }
+            }
+        }
         },
         "inbound_related_new": {
             "table_name": "inbound_related_new",
@@ -116,11 +125,107 @@
             "tag:isrd.isi.edu,2016:table-display": {
                  "*": {
                      "separator_markdown": " ",
-                     "row_markdown_pattern": "* **{{fk_to_reference_new}}**{.vocab} **{{fk2_to_reference_new}}**{.vocab}"
+                     "row_markdown_pattern": "**{{id_col}}**{.vocab} **{{fk_to_reference_new}}**{.vocab} **{{fk2_to_reference_new}}**{.vocab}"
                  }
                }
            }
-        }
+       },
+       "inb_test": {
+           "table_name": "inb_test",
+           "schema_name": "schema",
+           "kind": "table",
+           "keys": [{
+               "unique_columns": ["id_col"]
+           }],
+           "foreign_keys": [{
+               "names": [
+                   ["schema", "fk_inb_test"]
+               ],
+               "foreign_key_columns": [{
+                       "table_name": "inb_test",
+                       "schema_name": "schema",
+                       "column_name": "inb_test_1"
+                   }
+               ],
+               "referenced_columns": [{
+                   "table_name": "reference",
+                   "schema_name": "schema",
+                   "column_name": "id"
+               }]
+           }],
+           "column_definitions": [{
+                   "name": "id_col",
+                   "nullok": false,
+                   "type": {
+                       "typename": "serial"
+                   }
+               },
+               {
+                   "name": "inb_test_1",
+                   "type": {
+                       "typename": "serial"
+                   }
+               },
+               {
+                   "name": "inb_test_2",
+                   "type": {
+                       "typename": "text"
+                   }
+               }
+           ]
+      },
+       "related_entry": {
+           "table_name": "related_entry",
+           "schema_name": "schema",
+           "kind": "table",
+           "keys": [{
+               "unique_columns": ["id_col"]
+           }],
+           "foreign_keys": [{
+               "names": [
+                   ["schema", "inbound_related_entry"]
+               ],
+               "foreign_key_columns": [{
+                       "table_name": "related_entry",
+                       "schema_name": "schema",
+                       "column_name": "re_val_1"
+                   }
+               ],
+               "referenced_columns": [{
+                   "table_name": "reference",
+                   "schema_name": "schema",
+                   "column_name": "id"
+               }]
+           }],
+           "column_definitions": [{
+                   "name": "id_col",
+                   "nullok": false,
+                   "type": {
+                       "typename": "serial"
+                   }
+               },
+               {
+                   "name": "re_val_1",
+                   "type": {
+                       "typename": "serial"
+                   }
+               },
+               {
+                   "name": "re_val_2",
+                   "type": {
+                       "typename": "text"
+                   }
+               }
+           ],
+           "annotations": {
+           "tag:isrd.isi.edu,2016:table-display": {
+                "*": {
+                    "separator_markdown": " ",
+                    "row_markdown_pattern": "**{{id_col}}**{.vocab} **{{re_val_1}}**{.vocab} **{{re_val_2}}**{.vocab}"
+                }
+              }
+          }
+       }
     }
 
 }

@@ -397,7 +397,24 @@
         }
       ],
       "entityCount": 0,
-      "foreign_keys": [],
+      "foreign_keys": [{
+        "comment": null,
+        "foreign_key_columns": [
+          {
+            "table_name": "file",
+            "schema_name": "product",
+            "column_name": "accommodation_id"
+          }
+        ],
+        "annotations": {},
+        "referenced_columns": [
+          {
+            "table_name": "accommodation",
+            "schema_name": "product",
+            "column_name": "id"
+          }
+        ]
+      }],
       "table_name": "file",
       "schema_name": "product",
       "column_definitions": [
@@ -523,8 +540,11 @@
       ],
       "annotations": {
         "comment": [
-          "exclude"
-        ]
+          "association"
+        ],
+        "description": {
+          "display": "Files"
+        }
       }
     },
     "accommodation_image": {

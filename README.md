@@ -16,6 +16,7 @@ var configuration = {
 	{
 	    "catalog": {
 	        //"id": 1  //existing id of a catalog
+	        //"acls": {} 
 	    },
 	    "schema": {
 	        "name": "product",
@@ -37,6 +38,8 @@ var configuration = {
 }
 ```
 
+> As you can see you can update catalog ACLs by passing them in the configuration. Take a look at [ermrest documentation](https://github.com/informatics-isi-edu/ermrest/blob/master/user-doc/acls.md#available-static-acl-names) for ACL syntax. If you want everyone to be able to see your data use `{ "select": ["*"] }` as the value for the `acls`.
+
 Once you've your configuration you just need to call the `importData` function in your script. Here's how your code would look like if you have already declared the configuration variable mentioned above.
 
 ```javascript
@@ -51,7 +54,7 @@ ermrestUtils.importData(configuration).then(function(data) {
 
 ### Cleanup
 
-To delete the stuff created by the testcases, you should call `tear` with the same configuration that you provided for import. This will delete only that data which was created by the import function and levae other stuff intact. To allow delete, you need to set cleanup as true in your configuration as mentioned above.
+To delete the stuff created by the testcases, you should call `tear` with the same configuration that you provided for import. This will delete only that data which was created by the import function and leave other stuff intact. To allow delete, you need to set cleanup as true in your configuration as mentioned above.
 
 ```javascript
 var ermrestUtils = require('ermrest-data-utils');
@@ -83,4 +86,3 @@ ermrestUtils.download({
 	console.dir(err);
 });
 ```
-
