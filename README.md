@@ -14,19 +14,19 @@ To import data you need to provide a configuration that specifies the content to
 var configuration = {
 	setup : {
 	{
-	    "catalog": {
+	    "catalog": { // required
 	        //"id": 1  //existing id of a catalog
 	        //"acls": {} 
 	    },
-	    "schema": {
+	    "schema": { // required
 	        "name": "product",
 	        "createNew": true, // change this to false to avoid creating new schema
 	        "path": "schema/product.json" // path of the schema json file in the current working directory folder
 	    },
-	    "tables": {
+	    "tables": { // required
 	        "createNew": true, // Mention this to be true to allow creating new tables
 	    },
-	    "entities": {
+	    "entities": { // optional
 	        "createNew": true, // Mention this to be true to allow creating new entities
 	        "path": "data/product", // This is the path from where the json for the entities will be picked for import
 	    },
