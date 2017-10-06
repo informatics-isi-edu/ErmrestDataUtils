@@ -42,21 +42,25 @@ Catalog.prototype.create = function() {
 	return defer.promise;
 };
 
- /**
+Catalog.prototype.addACLs = function(acls) {
+	return Catalog.addACLs(this.url, this.id, acls);
+};
+
+/**
  * @param {acls} An array of acl objects
  * @returns {Promise} Returns a promise.
  * @desc
  * An asynchronous method that returns a promise. If fulfilled, it adds the acls for the catalog.
  */
-Catalog.prototype.addACLs = function(acls) {
-	var defer = Q.defer(), self = this;
-	if (!this.id) return defer.reject("No Id set : addACL catalog function"), defer.promise;
+Catalog.addACLs = function(url, id, acls) {
+	var defer = Q.defer();
+	if (!id) return defer.reject("No Id set : addACL catalog function"), defer.promise;
 	if (!acls || acls.length == 0) defer.resolve();
 
 	var promises = [];
 
 	for (var acl in acls) {
-		promises.push(self.addACL(acl, acls[acl]));
+		promises.push(Catalog.addACL(url, id, acl, acls[acl]));
 	}
 
 	Q.all(promises).then(function() {
@@ -66,7 +70,7 @@ Catalog.prototype.addACLs = function(acls) {
 	});
 
 	return defer.promise;
-}
+};
 
 /**
  * @param {string} key the key of the ACL.
@@ -75,14 +79,15 @@ Catalog.prototype.addACLs = function(acls) {
  * @desc
  * An asynchronous method that returns a promise. If fulfilled, it adds the acl for the catalog.
  */
-Catalog.prototype.addACL = function(aclKey, value) {
-	var defer = Q.defer(), self = this;
-	if (!this.id || (typeof aclKey !== 'string')) return defer.reject("No Id or ACL set : addACL catalog function"), defer.promise;
+
+Catalog.addACL = function(url, id, aclKey, value) {
+	var defer = Q.defer();
+	if (!id || (typeof aclKey !== 'string')) return defer.reject("No Id or ACL set : addACL catalog function"), defer.promise;
 	
-	http.put(this.url + '/catalog/' + this.id + "/acl/" + aclKey,  value).then(function(response) {
-		defer.resolve(self);
+	http.put(url + '/catalog/' + id + "/acl/" + aclKey,  value).then(function(response) {
+		defer.resolve();
 	}, function(err) {
-		defer.reject(err, self);
+		defer.reject(err);
 	});
 
 	return defer.promise;
