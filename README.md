@@ -52,6 +52,64 @@ ermrestUtils.importData(configuration).then(function(data) {
 });
 ```
 
+### Import ACL's explicitly
+
+To import acl's explicitly you can call the `importACLs` method and pass a configuration object. The format for the configuration is as follows
+
+```js
+var dataUtils = require('ErmrestDataUtils');
+
+var config = {
+	url: "https://dev.isrd.isi.edu/ermrest",  //Ermrest API url
+	authCookie: "ermrest_cookie;", // Ermrest Authentication cookie to create data
+	"catalog": {
+        "id": catalogId,
+        "acls": {
+            "enumerate": ["*",] // everybody can read!
+        },
+        "schemas": {
+            "product": {
+                "acls": {
+                    "enumerate": ["*"]
+                },
+                "tables": {
+                    "accommodation": {
+                        "acls": {
+                            "select": ["userid1", "userid2"]
+                        },
+                        "columns": {
+                            "id": {
+                                "acls": {
+                                    "select": []
+                                }
+                            },
+                            "title": {
+                                "acls": {
+                                    "select": ["userid1"]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
+
+dataUtils.importACLS(config).then(function() {
+    console.log("Acls imported with catalogId " + catalogId);
+    console.log("Please remember to clean up the catalog.");
+    process.exit(0);
+}, function(err) {
+    console.log("Unable to import acls");
+    console.dir(err);
+    process.exit(1);
+});
+```
+
+You can skip acls on catalog level or schema level or table level. The acls object is not mandatory and all other nested objects(schemas, tables, columns) are optional too.
+
+
 ### Cleanup
 
 To delete the stuff created by the testcases, you should call `tear` with the same configuration that you provided for import. This will delete only that data which was created by the import function and leave other stuff intact. To allow delete, you need to set cleanup as true in your configuration as mentioned above.

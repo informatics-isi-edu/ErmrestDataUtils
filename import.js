@@ -7,6 +7,7 @@ var http = require('request-q');
 var Catalog = require('./model/catalog.js'); 
 var Schema = require('./model/schema.js');
 var Table = require('./model/table.js');
+var Column = require('./model/column.js');
 var Entites = require('./model/entities.js');
 var Association = require('./model/association.js');
 var Q = require('q');
@@ -153,6 +154,49 @@ exports.importData = function(options) {
 	configuration.authCookie = options.authCookie;
 	console.log(options.authCookie);
 	return exports.setup(configuration);
+};
+
+exports.importACLS = function(options) {
+	var defer = Q.defer();
+	http.setDefaults({
+	    headers: { 'Cookie': options.authCookie || "a=b;" },
+	    json: true,
+	    _retriable_error_codes : [0,500,503]
+	});
+
+	var config = options.setup, url = options.url;
+
+	var promises = [];
+
+	if (config.catalog && config.catalog) { 
+		var catalog = config.catalog;
+		promises.push(Catalog.addACLs(url, catalog.id, catalog.acls));
+		
+		for (var schemaName in catalog.schemas) {
+			var schema = catalog.schemas[schemaName];
+			promises.push(Schema.addACLs(url, catalog.id, schemaName, schema.acls));
+			
+			for (var tableName in schema.tables) {
+				var table = schema.tables[tableName];
+				promises.push(Table.addACLs(url, catalog.id, schemaName, tableName, table.acls));
+				
+				for (var columnName in table.columns) {
+					var column = table.columns[columnName];
+					promises.push(Column.addACLs(url, catalog.id, schemaName, tableName, columnName, column.acls));
+				}
+			}
+		}
+	}
+	
+	if (promises.length === 0) defer.resolve();
+
+	Q.all(promises).then(function() {
+		defer.resolve();	
+	}, function(err) {
+		defer.reject(err);
+	});
+
+	return defer.promise;
 };
 
 /**

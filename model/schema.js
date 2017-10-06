@@ -35,6 +35,8 @@ Schema.prototype.create = function(schemaName) {
 	}).then(function() {
 		return self.createComment();
 	}).then(function() {
+		return self.addACLs();
+	}).then(function() {
 		defer.resolve(self);
 	}, function(err) {
 		defer.reject(err, self);
@@ -130,6 +132,57 @@ Schema.prototype.setDefaultTable = function() {
 	if (defaultTable == null) defaultTable = tables[rootTables[0]];
 	this.defaultTable = defaultTable;
 	return this.defaultTable;
+};
+
+Schema.prototype.addACLs = function() {
+	return Schema.addACLs(this.url, this.catalog.id, this.name, this.content.acls);
+};
+
+/**
+ * @param {acls} An array of acl objects
+ * @returns {Promise} Returns a promise.
+ * @desc
+ * An asynchronous method that returns a promise. If fulfilled, it adds the acls for the schema.
+ */
+Schema.addACLs = function(url, catalogId, schemaName, acls) {
+	var defer = Q.defer();
+	if (!catalogId) return defer.reject("No Id set : addACL Schema function"), defer.promise;
+	if (!acls || acls.length == 0) defer.resolve();
+
+	var promises = [];
+
+	for (var acl in acls) {
+		promises.push(Schema.addACL(url, catalogId, schemaName, acl, acls[acl]));
+	}
+
+	Q.all(promises).then(function() {
+		defer.resolve();
+	}, function(err) {
+		defer.reject(err);
+	});
+
+	return defer.promise;
+};
+
+/**
+ * @param {string} key the key of the ACL.
+ * @param {string[]} value the array of users that have that ACL (will be sent to ermret without any change).
+ * @returns {Promise} Returns a promise.
+ * @desc
+ * An asynchronous method that returns a promise. If fulfilled, it adds the acl for the schema.
+ */
+
+Schema.addACL = function(url, catalogId, schemaName, aclKey, value) {
+	var defer = Q.defer();
+	if (!catalogId || (typeof aclKey !== 'string')) return defer.reject("No Id or ACL set : addACL Schema function"), defer.promise;
+	
+	http.put(url + '/catalog/' + catalogId + "/schema/" + utils._fixedEncodeURIComponent(schemaName) + "/acl/" + aclKey,  value).then(function(response) {
+		defer.resolve();
+	}, function(err) {
+		defer.reject(err);
+	});
+
+	return defer.promise;
 };
 
 /**
