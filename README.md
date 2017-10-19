@@ -14,19 +14,19 @@ To import data you need to provide a configuration that specifies the content to
 var configuration = {
 	setup : {
 	{
-	    "catalog": {
+	    "catalog": { // required
 	        //"id": 1  //existing id of a catalog
 	        //"acls": {} 
 	    },
-	    "schema": {
+	    "schema": { // required
 	        "name": "product",
 	        "createNew": true, // change this to false to avoid creating new schema
 	        "path": "schema/product.json" // path of the schema json file in the current working directory folder
 	    },
-	    "tables": {
+	    "tables": { // required
 	        "createNew": true, // Mention this to be true to allow creating new tables
 	    },
-	    "entities": {
+	    "entities": { // optional
 	        "createNew": true, // Mention this to be true to allow creating new entities
 	        "path": "data/product", // This is the path from where the json for the entities will be picked for import
 	    },
@@ -51,6 +51,64 @@ ermrestUtils.importData(configuration).then(function(data) {
 	console.dir(err);
 });
 ```
+
+### Import ACL's explicitly
+
+To import acl's explicitly you can call the `importACLs` method and pass a configuration object. The format for the configuration is as follows
+
+```js
+var dataUtils = require('ErmrestDataUtils');
+
+var config = {
+	url: "https://dev.isrd.isi.edu/ermrest",  //Ermrest API url
+	authCookie: "ermrest_cookie;", // Ermrest Authentication cookie to create data
+	"catalog": {
+        "id": catalogId,
+        "acls": {
+            "enumerate": ["*",] // everybody can read!
+        },
+        "schemas": {
+            "product": {
+                "acls": {
+                    "enumerate": ["*"]
+                },
+                "tables": {
+                    "accommodation": {
+                        "acls": {
+                            "select": ["userid1", "userid2"]
+                        },
+                        "columns": {
+                            "id": {
+                                "acls": {
+                                    "select": []
+                                }
+                            },
+                            "title": {
+                                "acls": {
+                                    "select": ["userid1"]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
+
+dataUtils.importACLS(config).then(function() {
+    console.log("Acls imported with catalogId " + catalogId);
+    console.log("Please remember to clean up the catalog.");
+    process.exit(0);
+}, function(err) {
+    console.log("Unable to import acls");
+    console.dir(err);
+    process.exit(1);
+});
+```
+
+You can skip acls on catalog level or schema level or table level. The acls object is not mandatory and all other nested objects(schemas, tables, columns) are optional too.
+
 
 ### Cleanup
 

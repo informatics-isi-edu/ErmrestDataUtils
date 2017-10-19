@@ -105,6 +105,53 @@ Table.prototype.addForeignKey = function(foreignKey) {
 };
 
 /**
+ * @param {acls} An array of acl objects
+ * @returns {Promise} Returns a promise.
+ * @desc
+ * An asynchronous method that returns a promise. If fulfilled, it adds the acls for the table.
+ */
+Table.addACLs = function(url, catalogId, schemaName, tableName, acls) {
+	var defer = Q.defer();
+	if (!catalogId) return defer.reject("No catalogId set : addACL Table function"), defer.promise;
+	if (!acls || acls.length == 0) defer.resolve();
+
+	var promises = [];
+
+	for (var acl in acls) {
+		promises.push(Table.addACL(url, catalogId, schemaName, tableName, acl, acls[acl]));
+	}
+
+	Q.all(promises).then(function() {
+		defer.resolve();
+	}, function(err) {
+		defer.reject(err);
+	});
+
+	return defer.promise;
+};
+
+/**
+ * @param {string} key the key of the ACL.
+ * @param {string[]} value the array of users that have that ACL (will be sent to ermret without any change).
+ * @returns {Promise} Returns a promise.
+ * @desc
+ * An asynchronous method that returns a promise. If fulfilled, it adds the acl for the table.
+ */
+
+Table.addACL = function(url, catalogId, schemaName, tableName, aclKey, value) {
+	var defer = Q.defer();
+	if (!catalogId || (typeof aclKey !== 'string')) return defer.reject("No catalogId or ACL set : addACL Table function"), defer.promise;
+	
+	http.put(url + '/catalog/' + catalogId + "/schema/" + utils._fixedEncodeURIComponent(schemaName) + "/table/" + utils._fixedEncodeURIComponent(tableName) + "/acl/" + aclKey,  value).then(function(response) {
+		defer.resolve();
+	}, function(err) {
+		defer.reject(err);
+	});
+
+	return defer.promise;
+};
+
+/**
  *
  * @desc
  * Not yet implemented.
