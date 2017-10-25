@@ -2,6 +2,7 @@ var chance =  new (require('chance'))();
 var Q = require('q');
 var http = require('request-q');
 var utils = require('./utils.js');
+var systemColumns = require('./system_columns.js');
 
 /* @namespace Table
  * @desc
@@ -34,6 +35,30 @@ var Table = function(options) {
 	};
 };
 
+Table.prototype.addSystemColumsAndKeys = function() {
+	this.content.column_definitions = this.content.column_definitions || [];
+
+	var localSystemColumns = JSON.parse(JSON.stringify(systemColumns));
+	var localSystemCoumnnNames = localSystemColumns.map(c => c.name);
+
+	var systemColumnsFound = this.content.column_definitions.filter((c) => (localSystemCoumnnNames.indexOf(c.name) !== -1)).map(c => c.name);
+	localSystemColumns.forEach(c => {
+		if (systemColumnsFound.indexOf(c.name) === -1) {
+			this.content.column_definitions.push(c);
+		}
+	});
+
+	this.content.keys = this.content.keys || [];
+
+	var found = this.content.keys.find(k => ((k.unique_columns.legnth === 1) && (k.unique_columns.indexOf("RID") !== -1)));
+
+	if (!found) {
+		this.content.keys.push({ unique_columns: ["RID"], annotations: {} });
+	}
+
+	console.log("Table " + this.name + " has columns " + this.content.column_definitions.map(c => c.name).toString());
+};
+
 /**
  * @param {timeout} Optional : Used to add a wait between creation of table to avoid conflicts
  * @returns {Promise} Returns a promise.
@@ -48,6 +73,8 @@ Table.prototype.create = function(timeout) {
 	this.content.schema_name = this.schema.name;
 	this.foreignKeys = this.content.foreign_keys;
 	this.content.foreign_keys = [];
+
+	this.addSystemColumsAndKeys();
 
 	setTimeout(function() {
 
