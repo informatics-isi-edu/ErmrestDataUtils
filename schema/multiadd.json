@@ -1,0 +1,147 @@
+{
+    "schema_name": "multiadd",
+    "tables": {
+        "leaf": {
+            "table_name": "leaf",
+            "schema_name": "multiadd",
+            "kind": "table",
+            "keys": [
+                {
+                    "unique_columns": ["id"]
+                }
+            ],
+            "column_definitions": [
+                {
+                    "name": "id",
+                    "nullok": false,
+                    "type": {
+                        "typename": "serial"
+                    }
+                },
+                {
+                    "name": "Items",
+                    "nullok": true,
+                    "type": {
+                        "typename": "text"
+                    }
+                }
+
+            ],
+            "annotations": {
+                "tag:isrd.isi.edu,2016:visible-columns": {
+                    "*": [
+                        "id", ["schema", "inbound_fk_to_refernce"]
+                    ]
+                }
+            }
+        },
+        "association": {
+            "table_name": "association",
+            "schema_name": "multiadd",
+            "kind": "table",
+            "keys": [
+                {
+                    "unique_columns": ["ak1","ak2"]
+                }
+            ],
+            "foreign_keys": [
+                {
+                    "names": [
+                        ["multiadd", "fk_to_main"]
+                    ],
+                    "foreign_key_columns": [
+                    
+                        {
+                            "table_name": "association",
+                            "schema_name": "multiadd",
+                            "column_name": "ak1"
+                        }
+
+                    ],
+                    "referenced_columns": [
+                        
+                        {
+                            "table_name": "main",
+                            "schema_name": "multiadd",
+                            "column_name": "k1"
+                        }
+                    ]
+                },
+                {
+                    "names": [
+                        ["multiadd", "fk_to_leaf"]
+                    ],
+                    "foreign_key_columns": [
+                        {
+                            "table_name": "association",
+                            "schema_name": "multiadd",
+                            "column_name": "ak2"
+                        }
+
+                    ],
+                    "referenced_columns": [
+                        {
+                            "table_name": "leaf",
+                            "schema_name": "multiadd",
+                            "column_name": "id"
+                        }
+                    ]
+                }
+            ],
+            "column_definitions": [
+                {
+                    "name": "ak1",
+                    "nullok": false,
+                    "type": {
+                        "typename": "text"
+                    }
+                },
+                {
+                    "name": "ak2",
+                    "type": {
+                        "typename": "serial"
+                    }
+                }
+            ],
+            "annotations": {
+                "tag:isrd.isi.edu,2016:table-display": {
+                    "*": {
+                        "module": true
+                    }
+                }
+            }
+        },
+    "main": {
+        "table_name": "main",
+        "schema_name": "multiadd",
+        "kind": "table",
+        "keys": [
+            {
+                "unique_columns": ["k1"]
+            }
+        ],
+        "column_definitions": [
+            {
+                "name": "k1",
+                "nullok": false,
+                "type": {
+                    "typename": "text"
+                }
+            },
+            {
+                "name": "k2",
+                "type": {
+                    "typename": "serial"
+                }
+            }
+        ],
+        "annotations": {
+            "tag:isrd.isi.edu,2016:table-display": {
+                "*": {
+                    "module": true
+                }
+            }
+        }
+    }
+}
+}

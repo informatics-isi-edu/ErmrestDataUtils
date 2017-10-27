@@ -9,20 +9,20 @@ var configuration = {
             }
         },
         "schema": {
-            "name": "multiadd",
+            "name": "product",
             "createNew": true,
-        //  "path": "../chaise/test/e2e/data_setup/schema/record/product.json" 
-          "path":"./schema/multiadd.json"
-          // "path":"../ermrestjs/test/specs/annotation/conf/table_display/schema.json"
+          "path": "../chaise/test/e2e/data_setup/schema/record/product.json" 
+          
+          
         },
         "tables": {
             "createNew": true
         },
         "entities": {
             "createNew": true,
-            //  "path":"../chaise/test/e2e/data_setup/data/product"
-            //   "path":"../ermrestjs/test/specs/annotation/conf/table_display/data"
-			"path": "./data/multiadd"
+            "path":"../chaise/test/e2e/data_setup/data/product"
+            
+			
         }
     },
     url: process.env.ERMREST_URL,
