@@ -127,7 +127,7 @@ Table.prototype.addForeignKey = function(foreignKey) {
 		defer.resolve(self);
 	}, function(err) {
 		console.log(url);
-		console.dir(foreignkey);
+		console.log(foreignKey);
 		defer.reject(err, self);
 	});
 
