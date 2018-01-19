@@ -33,7 +33,6 @@ var create = function(entity, self) {
 	var autogenParam = (autogenColumns.length) ? ("?defaults=" + autogenColumns.join(',')) : "";
 
 	http.post(self.url + "/catalog/" + self.catalog.id + "/entity/" + utils._fixedEncodeURIComponent(self.schema.name) + ":" + utils._fixedEncodeURIComponent(self.table.name) + autogenParam, [entity]).then(function(response) {
-		console.log("this is the data: ", response.data);
 		defer.resolve(response.data);
 	}, function(err) {
 		defer.reject(err, self);
@@ -63,9 +62,9 @@ Entities.prototype.create = function(options) {
 		promises.push(create(e, self));
 	});
 
-	Q.all(promises).then(function() {
+	Q.all(promises).then(function(data) {
 		self.table.entityCount = options.entities.length;
-		defer.resolve(options.entities);
+		defer.resolve(data);
 	}, function(err) {
 		defer.reject(err, self);
 	});
