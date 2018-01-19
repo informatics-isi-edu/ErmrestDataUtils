@@ -4,7 +4,7 @@ exports.http = require('request-q');
 delete require.cache['request-q'];
 
 var http = require('request-q');
-var Catalog = require('./model/catalog.js'); 
+var Catalog = require('./model/catalog.js');
 var Schema = require('./model/schema.js');
 var Table = require('./model/table.js');
 var Column = require('./model/column.js');
@@ -21,10 +21,10 @@ exports.download = require('./export.js').download;
 
 /**
  * @desc
- * Fetches the schemas for a catalog as well as tables for those schemas and sets 
+ * Fetches the schemas for a catalog as well as tables for those schemas and sets
  * default schema and default table for a schema.
  * @returns {Promise} Returns a promise.
- * @param {options} A json Object which contains the url, optional authCookie and optional catalogId 
+ * @param {options} A json Object which contains the url, optional authCookie and optional catalogId
  */
 exports.introspect = function(options) {
 	var defer = Q.defer();
@@ -39,9 +39,9 @@ exports.introspect = function(options) {
 	    _retriable_error_codes : [0,500,503]
 	});
 
-	var catalog = new Catalog({ 
-		url: config.url, 
-		id: config.catalogId 
+	var catalog = new Catalog({
+		url: config.url,
+		id: config.catalogId
 	});
 
 	// introspect
@@ -57,13 +57,13 @@ exports.introspect = function(options) {
 
 /**
  * @desc
- * Creates new catalog if catalogId is not provided in the Catalog object, 
+ * Creates new catalog if catalogId is not provided in the Catalog object,
  * creates a new schema if createNew is true in the schema object and
  * creates new tables and foreign keys if createNew is true in the tables object.
  * Entities are also imported for specified tables if createNew is true in entities object.
  * @returns {Promise} Returns a promise.
  * @param {options} A json Object which contains the url, optional authCookie and configuraion object
- * 
+ *
  	{
 	    "catalog": {
 	    	//"id": 1  //existing id of a catalog
@@ -98,9 +98,9 @@ exports.setup = function(options) {
 	var schema, catalog;
 
 	if (config.catalog) {
-		catalog = new Catalog({ 
-			url: config.url, 
-			id: config.catalog.id 
+		catalog = new Catalog({
+			url: config.url,
+			id: config.catalog.id
 		});
 
 		if (config.schema) {
@@ -113,7 +113,7 @@ exports.setup = function(options) {
 			});
 		}
 	}
-	
+
 	var defer = Q.defer();
 
 	http.get(config.url.replace('ermrest', 'authn') + "/session").then(function(response) {
@@ -168,18 +168,18 @@ exports.importACLS = function(options) {
 
 	var promises = [];
 
-	if (config.catalog && config.catalog) { 
+	if (config.catalog && config.catalog) {
 		var catalog = config.catalog;
 		promises.push(Catalog.addACLs(url, catalog.id, catalog.acls));
-		
+
 		for (var schemaName in catalog.schemas) {
 			var schema = catalog.schemas[schemaName];
 			promises.push(Schema.addACLs(url, catalog.id, schemaName, schema.acls));
-			
+
 			for (var tableName in schema.tables) {
 				var table = schema.tables[tableName];
 				promises.push(Table.addACLs(url, catalog.id, schemaName, tableName, table.acls));
-				
+
 				for (var columnName in table.columns) {
 					var column = table.columns[columnName];
 					promises.push(Column.addACLs(url, catalog.id, schemaName, tableName, columnName, column.acls));
@@ -187,11 +187,11 @@ exports.importACLS = function(options) {
 			}
 		}
 	}
-	
+
 	if (promises.length === 0) defer.resolve();
 
 	Q.all(promises).then(function() {
-		defer.resolve();	
+		defer.resolve();
 	}, function(err) {
 		defer.reject(err);
 	});
@@ -201,13 +201,13 @@ exports.importACLS = function(options) {
 
 /**
  * @desc
- * Tears/deletes new catalog if catalogId is not provided in the Catalog object of setup, 
+ * Tears/deletes new catalog if catalogId is not provided in the Catalog object of setup,
  * deletes new schemas if createNew is true in the schema object of setup and
  * deletes new tables and foreign keys if createNew is true in the tables object of setup.
  * Entities are also removed for specified tables if createNew is true in entities object of setup.
  * @returns {Promise} Returns a promise.
  * @param {options} A json Object which contains the url, optional authCookie and setup configuraion object
- * 
+ *
  	"setup": {
 	    "catalog": {
 	    	//"id": 1  //existing id of a catalog
@@ -264,7 +264,7 @@ exports.tear = function(options) {
  */
 var removeCatalog = function(defer, catalogId) {
 	var catalog = new Catalog({ url: config.url, id: catalogId });
-	catalog.remove().then(function() {	
+	catalog.remove().then(function() {
 		console.log("Catalog deleted with id " + catalog.id);
 		defer.resolve();
 	}, function(err) {
@@ -279,7 +279,7 @@ var removeCatalog = function(defer, catalogId) {
  * @desc
  * Deletes a schema .
  * @returns {null}
- * @param {promise, catalogId, schemaName} 
+ * @param {promise, catalogId, schemaName}
  */
 var removeSchema = function(defer, catalogId, schemaName) {
 	var catalog = new Catalog({ url: config.url, id: catalogId });
@@ -308,7 +308,7 @@ var removeSchema = function(defer, catalogId, schemaName) {
  * @desc
  * Deletes tables that were created according to the configuration .
  * @returns {null}
- * @param {promise, catalogId, schemaName} 
+ * @param {promise, catalogId, schemaName}
  */
 var removeTables = function(defer, catalogId, schemaName) {
 	var promises = [], catalog = new Catalog({ url: config.url, id: catalogId });
@@ -332,13 +332,13 @@ var removeTables = function(defer, catalogId, schemaName) {
 		if (!schema.content.tables[k].exists || (config.setup.tables.newTables.indexOf(k) != -1)) {
 			tableNames.push(table.name);
 			tables[table.name] = table;
-		} 
+		}
 	}
 
 	var deleteTable = function() {
 		if (tablesToBeDeleted.length == 0) return defer.resolve();
 		var name = tablesToBeDeleted.shift();
-		
+
 		var table = tables[name];
 		table.remove().then(function() {
 			deleteTable();
@@ -353,7 +353,7 @@ var removeTables = function(defer, catalogId, schemaName) {
 			tablesToBeDeleted = tablesToBeDeleted.reverse();
 			deleteTable();
 			return;
-		} 
+		}
 
 		var name = tableNames.shift();
 		if (association.hasAReference(name, tablesToBeDeleted)) {
@@ -372,14 +372,14 @@ var removeTables = function(defer, catalogId, schemaName) {
  * @desc
  * Creates a new catalog if catalog id is not specified.
  * @returns {Promise}
- * @param {catalog} 
+ * @param {catalog}
  */
 var createCatalog = function(catalog) {
 	var defer = Q.defer();
 	var isNew = true;
 	var acls = config.catalog.acls;
 	var hasValidACLs = (typeof acls === "object") && (acls.constructor === Object)  && Object.keys(acls).length !== 0;
-	
+
 	if (!catalog) {
 		defer.resolve();
 	} else if (catalog.id && !config.catalog.acls) {
@@ -388,7 +388,7 @@ var createCatalog = function(catalog) {
 	} else {
 		if (catalog.id) isNew = false;
 		catalog.create().then(function() {
-			
+
 			if (isNew) console.log("Catalog created with id " + catalog.id);
 			else console.log("Catalog with id " + catalog.id + " already exists.");
 
@@ -414,14 +414,14 @@ var createCatalog = function(catalog) {
  * @desc
  * Creates a new schema for a catalog if createNew is true.
  * @returns {Promise}
- * @param {schema} 
+ * @param {schema}
  */
 var createSchema = function(schema) {
 	var defer = Q.defer();
 	if (!schema) {
 		defer.resolve();
 	} else if (config.schema.createNew) {
-		schema.create().then(function() {	
+		schema.create().then(function() {
 			console.log("Schema created with name " + schema.name);
 			defer.resolve();
 		}, function(err) {
@@ -489,9 +489,9 @@ var createTables = function(schema) {
  * @param {tables} An array of Table Objects.
  */
 var importEntities = function(tableNames, tables, schema) {
-	var defer = Q.defer(), index = -1, importedTables = []; 
+	var defer = Q.defer(), index = -1, importedTables = [];
 	delete require.cache[require.resolve(process.env.PWD + "/" + (config.schema.path || ('./schema/' + config.schemaName  + '.json')))];
-	
+
 	if (config.entities && config.entities.createNew) {
 		console.log("Inside import entities");
 		var cb = function() {
@@ -529,15 +529,16 @@ var importEntities = function(tableNames, tables, schema) {
  */
 var insertEntitiesForATable = function(table, schemaName) {
 	var defer = Q.defer();
-	
-	var datasets = new Entites({ 
+
+	var datasets = new Entites({
 		url: config.url,
-		table: table 
+		table: table
 	});
 	datasets.create({
 		entities: require(process.env.PWD + "/" + (config.entities.path + "/" + table.name + '.json'))
 	}).then(function(entities) {
 		console.log(entities.length + " Entities of type " + table.name.toLowerCase() + " created");
+		console.log(entities);
 		table.entites = entities;
 		defer.resolve();
 	}, function(err) {
@@ -555,7 +556,7 @@ var insertEntitiesForATable = function(table, schemaName) {
  */
 var createForeignKeys = function(schema) {
 	var defer = Q.defer();
-	
+
 	var i = 0, keys = Object.keys(schema.tables);
 
 	var createForeignKey = function() {
@@ -588,4 +589,4 @@ var createForeignKeys = function(schema) {
 	createForeignKey();
 
     return defer.promise;
-};	
+};
