@@ -32,8 +32,8 @@ var create = function(entity, self) {
 
 	var autogenParam = (autogenColumns.length) ? ("?defaults=" + autogenColumns.join(',')) : "";
 
-	entity.RID = null;
 	http.post(self.url + "/catalog/" + self.catalog.id + "/entity/" + utils._fixedEncodeURIComponent(self.schema.name) + ":" + utils._fixedEncodeURIComponent(self.table.name) + autogenParam, [entity]).then(function(response) {
+		console.log("this is the data: ", response.data);
 		defer.resolve(response.data);
 	}, function(err) {
 		defer.reject(err, self);
