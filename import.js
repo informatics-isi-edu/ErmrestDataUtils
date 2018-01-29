@@ -538,7 +538,7 @@ var insertEntitiesForATable = function(table, schemaName) {
 		entities: require(process.env.PWD + "/" + (config.entities.path + "/" + table.name + '.json'))
 	}).then(function(entities) {
 		console.log(entities.length + " Entities of type " + table.name.toLowerCase() + " created");
-		table.entities = entities[0];
+		table.entities = entities;
 		defer.resolve();
 	}, function(err) {
 		defer.reject(err);

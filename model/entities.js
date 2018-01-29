@@ -33,7 +33,7 @@ var create = function(entity, self) {
 	var autogenParam = (autogenColumns.length) ? ("?defaults=" + autogenColumns.join(',')) : "";
 
 	http.post(self.url + "/catalog/" + self.catalog.id + "/entity/" + utils._fixedEncodeURIComponent(self.schema.name) + ":" + utils._fixedEncodeURIComponent(self.table.name) + autogenParam, [entity]).then(function(response) {
-		defer.resolve(response.data);
+		defer.resolve(response.data[0]);
 	}, function(err) {
 		defer.reject(err, self);
 	});
