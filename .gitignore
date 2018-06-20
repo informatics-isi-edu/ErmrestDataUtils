@@ -56,3 +56,4 @@ deployment-config.json
 .make-*
 index.html
 sftp-config.json
+local

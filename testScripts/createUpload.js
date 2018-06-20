@@ -7,7 +7,7 @@ var configuration = {
         "schema": {
             "name": "faceting",
             "createNew": true,
-            "path": "../local/schema/upload.json"
+            "path": "schema/upload.json"
         },
         "tables": {
             "createNew": true
@@ -24,12 +24,10 @@ dataUtils.importData(configuration).then(function(data) {
 
     var acls = {
         "select": [
-            "https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b", // Anyone in "isrd-staff" can read ACL
-            "https://auth.globus.org/eae2035c-01d0-11e6-a311-c78c6eaeef83"  // jchudytest can read ACL
+            "https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b" // Anyone in "isrd-staff" can read ACL
         ],
         "write": [
-            "https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b", // Anyone in "isrd-staff" can write ACL
-            "https://auth.globus.org/eae2035c-01d0-11e6-a311-c78c6eaeef83"  // jchudytest can write ACL
+            "https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b" // Anyone in "isrd-staff" can write ACL
         ]
     };
 
