@@ -1,0 +1,114 @@
+{
+    "tables": {
+        "file": {
+            "comment": "asset/object",
+            "kind": "table",
+            "keys": [
+                {
+                    "comment": null,
+                    "annotations": {},
+                    "unique_columns": [
+                        "id"
+                    ]
+                }
+            ],
+            "entityCount": 0,
+            "foreign_keys": [],
+            "table_name": "file",
+            "schema_name": "upload",
+            "column_definitions": [
+                {
+                    "comment": null,
+                    "name": "id",
+                    "default": null,
+                    "nullok": false,
+                    "type": {
+                        "typename": "serial4"
+                    },
+                    "annotations": {
+                        "tag:isrd.isi.edu,2016:generated": null
+                    }
+                },
+                {
+                    "comment": null,
+                    "name": "fileid",
+                    "default": null,
+                    "nullok": true,
+                    "type": {
+                        "typename": "int4"
+                    }
+                },
+                {
+                    "comment": "asset/reference",
+                    "name": "uri",
+                    "default": null,
+                    "nullok": true,
+                    "type": {
+                        "typename": "text"
+                    },
+                    "annotations": {
+                        "tag:isrd.isi.edu,2017:asset": {
+                            "url_pattern":"/hatrac/js/chaise/{{{_timestamp_txt}}}/{{{_fileid}}}/{{{_uri.md5_hex}}}",
+                            "filename_column" : "filename",
+                            "byte_count_column": "bytes",
+                            "md5": "md5",
+                            "filename_ext_filter": [".txt", ".png"]
+                        }
+                    }
+                },
+                {
+                    "comment": null,
+                    "name": "filename",
+                    "default": null,
+                    "nullok": true,
+                    "type": {
+                        "typename": "text"
+                    }
+                },
+                {
+                    "comment": null,
+                    "name": "bytes",
+                    "default": null,
+                    "nullok": true,
+                    "type": {
+                        "typename": "int8"
+                    }
+                },
+                {
+                    "comment": null,
+                    "name": "md5",
+                    "default": null,
+                    "nullok": true,
+                    "type": {
+                        "typename": "text"
+                    }
+                },
+                {
+                    "comment": null,
+                    "name": "timestamp_txt",
+                    "type": {
+                        "typename": "text"
+                    }
+                }
+            ],
+            "annotations": {
+                "tag:isrd.isi.edu,2016:visible-columns": {
+                    "*": ["fileid", "uri", "filename", "bytes"],
+                    "entry": ["fileid", "uri", "timestamp_txt"]
+                }
+            }
+        }
+    },
+    "table_names": [
+        "file"
+    ],
+    "comment": null,
+    "annotations": {
+        "tag:isrd.isi.edu,2016:app-links": {
+            "detailed": "tag:isrd.isi.edu,2016:chaise:record",
+            "compact": "tag:isrd.isi.edu,2016:chaise:recordset",
+            "entry": "tag:isrd.isi.edu,2016:chaise:recordedit"
+        }
+    },
+    "schema_name": "upload"
+}
