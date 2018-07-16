@@ -72,7 +72,9 @@ Table.prototype.create = function(timeout) {
 	this.foreignKeys = this.content.foreign_keys;
 	this.content.foreign_keys = [];
 
+    console.time("add_sys_columns");
 	this.addSystemColumsAndKeys();
+    console.timeEnd("add_sys_columns");
 
 	setTimeout(function() {
 
