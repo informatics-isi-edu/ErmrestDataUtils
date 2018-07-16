@@ -22,13 +22,13 @@ var Table = function(options) {
 	this.content.schema_name = this.schema.name;
 	this.setTableParameters = function(name) {
 		this.content = {
-		  "comment": "", 
-		  "kind": "table", 
-		  "keys": [], 
-		  "foreign_keys": [], 
-		  "table_name": name, 
-		  "schema_name": this.schema.name, 
-		  "column_definitions": [], 
+		  "comment": "",
+		  "kind": "table",
+		  "keys": [],
+		  "foreign_keys": [],
+		  "table_name": name,
+		  "schema_name": this.schema.name,
+		  "column_definitions": [],
 		  "annotations": {}
 		};
 		this.name = name;
@@ -55,8 +55,6 @@ Table.prototype.addSystemColumsAndKeys = function() {
 	if (!found) {
 		this.content.keys.push({ unique_columns: ["RID"], annotations: {} });
 	}
-
-	console.log("Table " + this.name + " has columns " + this.content.column_definitions.map(c => c.name).toString());
 };
 
 /**
@@ -69,7 +67,7 @@ Table.prototype.create = function(timeout) {
 	var defer = Q.defer(), self  = this;
 
 	if (!this.catalog.id || !this.schema.name || !this.name) return defer.reject("No catalog or schema set : create table function"), defer.promise;
-	
+
 	this.content.schema_name = this.schema.name;
 	this.foreignKeys = this.content.foreign_keys;
 	this.content.foreign_keys = [];
@@ -101,7 +99,7 @@ Table.prototype.create = function(timeout) {
 Table.prototype.remove = function() {
 	var defer = Q.defer(), self = this;
 	if (!this.catalog.id || !this.schema.name || !this.name) return defer.reject("No catalog or schema or table name set : create table function"), defer.promise;
-	
+
 	http.delete(this.url + '/catalog/' + this.catalog.id + "/schema/" + utils._fixedEncodeURIComponent(this.schema.name) + "/table/" + utils._fixedEncodeURIComponent(this.name)).then(function() {
 		console.log("Table " + self.content.table_name + " deleted");
 		defer.resolve(self);
@@ -120,7 +118,7 @@ Table.prototype.remove = function() {
  */
 Table.prototype.addForeignKey = function(foreignKey) {
 	var defer = Q.defer(), self = this;
-	
+
 	var url = this.url + '/catalog/' + this.catalog.id + "/schema/" + utils._fixedEncodeURIComponent(this.schema.name) + "/table/" + utils._fixedEncodeURIComponent(this.name) + "/foreignkey";
 	http.post(url, foreignKey).then(function(response) {
 		self.content.foreign_keys.push(response.data);
@@ -171,7 +169,7 @@ Table.addACLs = function(url, catalogId, schemaName, tableName, acls) {
 Table.addACL = function(url, catalogId, schemaName, tableName, aclKey, value) {
 	var defer = Q.defer();
 	if (!catalogId || (typeof aclKey !== 'string')) return defer.reject("No catalogId or ACL set : addACL Table function"), defer.promise;
-	
+
 	http.put(url + '/catalog/' + catalogId + "/schema/" + utils._fixedEncodeURIComponent(schemaName) + "/table/" + utils._fixedEncodeURIComponent(tableName) + "/acl/" + aclKey,  value).then(function(response) {
 		defer.resolve();
 	}, function(err) {
