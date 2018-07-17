@@ -18,7 +18,11 @@ module.exports = [{
     "nullok": false,
     "default": null,
     "type": {
+      "typename": "ermrest_rct",
+      "is_domain": true,
+      "base_type": {
         "typename": "timestamptz"
+      }
     },
     "annotations": {}
   },
@@ -28,7 +32,11 @@ module.exports = [{
     "nullok": false,
     "default": null,
     "type": {
+      "typename": "ermrest_rmt",
+      "is_domain": true,
+      "base_type": {
         "typename": "timestamptz"
+      }
     },
     "annotations": {}
   },
@@ -38,7 +46,11 @@ module.exports = [{
     "nullok": true,
     "default": null,
     "type": {
+      "typename": "ermrest_rcb",
+      "is_domain": true,
+      "base_type": {
         "typename": "text"
+      }
     },
     "annotations": {}
   },
@@ -48,7 +60,11 @@ module.exports = [{
     "nullok": true,
     "default": null,
     "type": {
+      "typename": "ermrest_rmb",
+      "is_domain": true,
+      "base_type": {
         "typename": "text"
+      }
     },
     "annotations": {}
   }
