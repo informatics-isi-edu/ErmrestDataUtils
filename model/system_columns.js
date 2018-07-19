@@ -28,20 +28,6 @@ module.exports = [{
   },
   {
     "comment": null,
-    "name": "RMT",
-    "nullok": false,
-    "default": null,
-    "type": {
-      "typename": "ermrest_rmt",
-      "is_domain": true,
-      "base_type": {
-        "typename": "timestamptz"
-      }
-    },
-    "annotations": {}
-  },
-  {
-    "comment": null,
     "name": "RCB",
     "nullok": true,
     "default": null,
