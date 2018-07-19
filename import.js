@@ -549,43 +549,46 @@ var insertEntitiesForATable = function(table, schemaName) {
 
 /**
  * @desc
- * Creates foreign keys for specified tables.
+ * Creates all the foreignkeys specified in the schema
  * @returns {Promise} Returns a promise.
  * @param {tables} table Objects.
  */
 var createForeignKeys = function(schema) {
 	var defer = Q.defer();
 
-	var i = 0, keys = Object.keys(schema.tables);
-
-	var createForeignKey = function() {
-		if (i == keys.length) {
-			defer.resolve();
-		} else {
-			var key = keys[i];
-			var table = schema.tables[key];
-			if (config.tables.createNew == true && (!schema.content.tables[key].exists || (config.tables.newTables.indexOf(key) != -1)) && table.foreignKeys) {
-				i++;
-				var promises = [];
-				table.foreignKeys.forEach(function(fk) {
-					promises.push(table.addForeignKey(fk));
-				});
-
-				Q.all(promises).then(function() {
-					console.log("Foreign keys for table " + table.name + " created")
-					createForeignKey();
-				}, function(err) {
-					console.log(err);
-					defer.reject(err);
-				});
-			} else {
-				i++;
-				createForeignKey();
-			}
-		}
-	}
-
-	createForeignKey();
-
+  if (config.tables.createNew !== true) {
+    defer.resolve();
     return defer.promise;
+  }
+
+  var fks = [], table;
+  for (var tableName in schema.tables) {
+    if (!schema.tables.hasOwnProperty(tableName)) continue;
+    table = schema.tables[tableName];
+
+    // if table is not new or doesn't have any foreignkeys don't bother
+    if (!table.foreignKeys) continue;
+
+    // NOTE exists and newTables are not documented anywhere
+    if (schema.content.tables[tableName].exists && (config.tables.newTables && config.tables.newTables.indexOf(tableName) === -1)) {
+      continue;
+    }
+
+    fks.push(...table.foreignKeys);
+  }
+
+  if (fks.length === 0) {
+    defer.resolve();
+  }
+
+  var url = schema.url + '/catalog/' + schema.catalog.id + "/schema/";
+  http.post(url, fks).then(function (response) {
+    console.log("Foreignkeys created for schema " + schema.name);
+    defer.resolve();
+  }, function (err) {
+    console.log(err);
+    defer.reject(err);
+  });
+
+  return defer.promise;
 };

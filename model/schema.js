@@ -53,7 +53,7 @@ Schema.prototype.create = function(schemaName) {
 Schema.prototype.remove = function() {
 	var defer = Q.defer(), self = this;
 	if (!this.catalog.id || !this.name) return defer.reject("No Catalog or Name set: remove schema function"), defer.promise;
-	
+
 	http.delete(this.url + '/catalog/' + this.catalog.id + "/schema/" + utils._fixedEncodeURIComponent(this.name)).then(function() {
 		defer.resolve(self);
 	}, function(err) {
@@ -120,7 +120,7 @@ Schema.prototype.setDefaultTable = function() {
 			(table['annotations']['comment'].contains('exclude') || table['annotations']['comment'].contains('association'));
 		var nested = table['annotations'] != null && table['annotations']['comment'] != null &&
 			table['annotations']['comment'].contains('nested');
-		
+
 		if (!exclude && !nested) {
 			rootTables.push(table['table_name']);
 			if (table['annotations'] != null && table['annotations']['comment'] != null && table['annotations']['comment'].contains('default')) {
@@ -128,7 +128,7 @@ Schema.prototype.setDefaultTable = function() {
 			}
 		}
 	};
-	
+
 	if (defaultTable == null) defaultTable = tables[rootTables[0]];
 	this.defaultTable = defaultTable;
 	return this.defaultTable;
@@ -175,7 +175,7 @@ Schema.addACLs = function(url, catalogId, schemaName, acls) {
 Schema.addACL = function(url, catalogId, schemaName, aclKey, value) {
 	var defer = Q.defer();
 	if (!catalogId || (typeof aclKey !== 'string')) return defer.reject("No Id or ACL set : addACL Schema function"), defer.promise;
-	
+
 	http.put(url + '/catalog/' + catalogId + "/schema/" + utils._fixedEncodeURIComponent(schemaName) + "/acl/" + aclKey,  value).then(function(response) {
 		defer.resolve();
 	}, function(err) {
