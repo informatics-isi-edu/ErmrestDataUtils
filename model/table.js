@@ -64,9 +64,9 @@ Table.prototype.addSystemColumsAndKeys = function() {
  * An asynchronous method that returns a promise. If fulfilled, it creates a new table.
  */
 Table.prototype.create = function(timeout) {
-	var defer = Q.defer(), self  = this;
+	// var self  = this;
 
-	if (!this.catalog.id || !this.schema.name || !this.name) return defer.reject("No catalog or schema set : create table function"), defer.promise;
+	// if (!this.catalog.id || !this.schema.name || !this.name) return defer.reject("No catalog or schema set : create table function"), defer.promise;
 
 	this.content.schema_name = this.schema.name;
 	this.foreignKeys = this.content.foreign_keys;
@@ -74,20 +74,21 @@ Table.prototype.create = function(timeout) {
 
 	this.addSystemColumsAndKeys();
 
-	setTimeout(function() {
-
-		http.post(self.url + '/catalog/' + self.catalog.id + "/schema/" + utils._fixedEncodeURIComponent(self.schema.name) + "/table", self.content).then(function(response) {
-			self.content = response.data;
-			self.name = self.content.table_name;
-			console.log("Table " + self.content.table_name + " created");
-			defer.resolve(self);
-		}, function(err) {
-			defer.reject(err, self);
-		});
-
-	}, timeout || 0);
-
-	return defer.promise;
+	// setTimeout(function() {
+  //
+	// 	http.post(self.url + '/catalog/' + self.catalog.id + "/schema/" + utils._fixedEncodeURIComponent(self.schema.name) + "/table", self.content).then(function(response) {
+	// 		self.content = response.data;
+	// 		self.name = self.content.table_name;
+	// 		console.log("Table " + self.content.table_name + " created");
+	// 		defer.resolve(self);
+	// 	}, function(err) {
+	// 		defer.reject(err, self);
+	// 	});
+  //
+	// }, timeout || 0);
+  //
+	// return defer.promise;
+	return this.content;
 };
 
 /**
