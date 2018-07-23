@@ -459,11 +459,13 @@ var createTables = function(schema) {
 			});
 			tables[k] = table;
 			tableNames.push(k);
+
+      // gather the table documents for creation
 			if (config.tables.createNew == true && (!schema.content.tables[k].exists || (config.tables.newTables.indexOf(k) != -1))) {
         if (!table.catalog.id || !table.schema.name || !table.name) {
           return defer.reject("No catalog or schema set : create table function"), defer.promise;
         }
-        tableDocs.push(table.create());
+        tableDocs.push(table.content);
       }
 		}
 
