@@ -615,11 +615,9 @@ exports.createSchemasAndEntities = function (settings) {
   */
   var defer = Q.defer();
 
-  console.log("HERE WE GO!");
-
   var error = "";
   if (typeof settings.authCookie !== "string" && !settings.authCookie) {
-    error = "authCookie is missing";
+    error = "authCookie is missing.";
   } else if (!settings.setup) {
     error = "setup is missing.";
   } else if (!settings.setup.catalog) {
@@ -647,21 +645,17 @@ exports.createSchemasAndEntities = function (settings) {
 
   console.log("authCookie: ", settings.authCookie);
   http.get(config.url.replace('ermrest', 'authn') + "/session").then(function(response) {
-    console.log("Valid session found");
+    console.log("Valid session found.");
     // create catalog or use the existing
     return createCatalog(catalog);
   }).then(function () {
     // append all schemas together and send a request to create them
-    console.log("create catalog done");
     return createSchemas(catalog);
   }).then(function () {
-    console.log("create schemas done");
     return importCatalogEntities(catalog);
   }).then(function () {
-    console.log("create entities done");
     return createCatalogForeignKeys(catalog);
   }).then(function () {
-    console.log("create foreignkeys done");
     if (config.schemas) {
       defer.resolve({schemas: catalog.schemas, catalogId: catalog.id});
     } else {
@@ -695,6 +689,9 @@ function createSchemas(catalog) {
       schema: require(process.env.PWD + "/" + config.schemas[schemaName].path)
     });
 
+    if (schemaName != schema.name) {
+      return defer.reject("given schema name (" + schemaName + ") in configuraion is not the same as schema_name."), defer.promise;
+    }
 
     // create table objects in the schema (this removes foreignkey content)
     schema.tables = {};
@@ -755,7 +752,6 @@ function importCatalogEntities(catalog) {
   }
 
   Q.all(promises).then(function () {
-    console.log("entities created for the given schemas!");
     defer.resolve();
   }).catch(function (err) {
     defer.reject(err);
@@ -787,7 +783,7 @@ function createCatalogForeignKeys(catalog) {
 
   var url = schema.url + '/catalog/' + schema.catalog.id + "/schema/";
   http.post(url, fks).then(function (response) {
-    console.log(fks.length + " foreignkeys created for the given schemas!");
+    console.log(fks.length + " foreignkeys created for the given schemas.");
     defer.resolve();
   }).catch(function (err) {
     defer.reject(err);
