@@ -247,7 +247,7 @@ exports.tear = function(options) {
 		removeCatalog(defer, options.catalogId);
 	} else if (config.setup.schema.createNew) {
 		removeSchema(defer, options.catalogId, config.setup.schema)
-	} else if (!config.setup.tables.newTables || !config.setup.tables.newTables.length > 0) {
+	} else if (!config.setup.tables.newTables || config.setup.tables.newTables.length > 0) {
 		removeTables(defer, options.catalogId, config.setup.schema);
 	} else {
 		defer.resolve();
@@ -508,7 +508,7 @@ var importEntities = function(tableNames, tables, schema) {
 			var table = tables[name];
 			if (!table.exists || config.entities.newTables.indexOf(name) != -1) {
 				var table = tables[name];
-				insertEntitiesForATable(table, schema.name).then(function() {
+				insertEntitiesForATable(table, schema.name, config.entities.path).then(function() {
 					importedTables.push(name);
 					cb();
 				}, function(err) {
@@ -535,7 +535,7 @@ var importEntities = function(tableNames, tables, schema) {
  * @returns {Promise} Returns a promise.
  * @param {table} A Table Object.
  */
-var insertEntitiesForATable = function(table, schemaName) {
+var insertEntitiesForATable = function(table, schemaName, entitiesPath) {
 	var defer = Q.defer();
 
 	var datasets = new Entites({
@@ -543,7 +543,7 @@ var insertEntitiesForATable = function(table, schemaName) {
 		table: table
 	});
 	datasets.create({
-		entities: require(process.env.PWD + "/" + (config.entities.path + "/" + table.name + '.json'))
+		entities: require(process.env.PWD + "/" + (entitiesPath + "/" + table.name + '.json'))
 	}).then(function(entities) {
 		console.log(entities.length + " Entities of type " + table.name.toLowerCase() + " created");
 		table.entities = entities;
@@ -600,3 +600,198 @@ var createForeignKeys = function(schema) {
 
   return defer.promise;
 };
+
+
+exports.createSchemasAndEntities = function (settings) {
+  /**
+  * {
+  *  url
+  *  authCookie
+  *  catalog: {} // if you want to test on existsing schema provide `id`, it could have `acls`
+  *  schemas: [
+  *    {path: "", entities: ""}
+  *  ]
+  * }
+  */
+  var defer = Q.defer();
+
+  console.log("HERE WE GO!");
+
+  var error = "";
+  if (typeof settings.authCookie !== "string" && !settings.authCookie) {
+    error = "authCookie is missing";
+  } else if (!settings.setup) {
+    error = "setup is missing.";
+  } else if (!settings.setup.catalog) {
+    error = "setup.catalog is missing.";
+  }
+
+  if (error) {
+    return defer.reject(error), defer.promise;
+  }
+
+  config = settings.setup;
+  config.url = settings.url || 'https://dev.isrd.isi.edu/ermrest';
+
+  http.setDefaults({
+    headers: { 'Cookie': settings.authCookie || "a=b;" },
+    json: true,
+    _retriable_error_codes : [0,500,503]
+  });
+
+  // if catalogId exists, we won't create a new catalog.
+  var catalog = new Catalog({
+    url: config.url,
+    id: config.catalog.id
+  });
+
+  console.log("authCookie: ", settings.authCookie);
+  http.get(config.url.replace('ermrest', 'authn') + "/session").then(function(response) {
+    console.log("Valid session found");
+    // create catalog or use the existing
+    return createCatalog(catalog);
+  }).then(function () {
+    // append all schemas together and send a request to create them
+    console.log("create catalog done");
+    return createSchemas(catalog);
+  }).then(function () {
+    console.log("create schemas done");
+    return importCatalogEntities(catalog);
+  }).then(function () {
+    console.log("create entities done");
+    return createCatalogForeignKeys(catalog);
+  }).then(function () {
+    console.log("create foreignkeys done");
+    if (config.schemas) {
+      defer.resolve({schemas: catalog.schemas, catalogId: catalog.id});
+    } else {
+      defer.resolve({catalogId: catalog.id});
+    }
+  }).catch(function (err) {
+    console.log("catch error!");
+    console.log(err);
+    defer.reject(err);
+  });
+
+  return defer.promise;
+};
+
+
+function createSchemas(catalog) {
+  var defer = Q.defer();
+
+  if (!config.schemas) {
+      return defer.resolve(), defer.promise;
+  }
+
+  catalog.schemas = {};
+  var schemaDocs = [], schema, table;
+  for(var schemaName in config.schemas) {
+    if (!config.schemas.hasOwnProperty(schemaName)) continue;
+
+    schema = new Schema({
+      url: config.url,
+      catalog: catalog,
+      schema: require(process.env.PWD + "/" + config.schemas[schemaName].path)
+    });
+
+
+    // create table objects in the schema (this removes foreignkey content)
+    schema.tables = {};
+    for (var k in schema.content.tables) {
+      if (!schema.content.tables.hasOwnProperty(k)) continue;
+
+		  table = new Table({
+				url: config.url,
+				schema: schema,
+				table: schema.content.tables[k]
+			});
+
+      schema.tables[table.name] = table;
+    }
+
+    // add the schema to list
+    schemaDocs.push(schema.content);
+
+    // update catalog.schemas
+    catalog.schemas[schema.name] = schema;
+  }
+
+  var url = schema.url + '/catalog/' + schema.catalog.id + "/schema/";
+  // TODO this can be in form of {'schemas': {'schemaname': {}}}
+  http.post(url, schemaDocs).then(function () {
+    console.log("Created the following schemas: " + schemaDocs.map(function (s) {return s.schema_name;}).join(", "));
+    defer.resolve();
+  }).catch(function (err) {
+    defer.reject(err);
+  });
+
+  return defer.promise;
+}
+
+
+function importCatalogEntities(catalog) {
+  var defer = Q.defer();
+
+  if (!config.schemas) {
+      return defer.resolve(), defer.promise;
+  }
+
+  var promises = [], schema, table;
+  for (var schemaName in catalog.schemas) {
+    if (!catalog.schemas.hasOwnProperty(schemaName)) continue;
+
+    schema = catalog.schemas[schemaName];
+    for (var tableName in schema.tables) {
+      if (!schema.tables.hasOwnProperty(tableName)) continue;
+      if (!config.schemas[schemaName].entities) continue;
+
+      promises.push(insertEntitiesForATable(schema.tables[tableName], schemaName, config.schemas[schemaName].entities));
+    }
+  }
+
+  if (promises.length === 0) {
+    return defer.resolve(), defer.promise;
+  }
+
+  Q.all(promises).then(function () {
+    console.log("entities created for the given schemas!");
+    defer.resolve();
+  }).catch(function (err) {
+    defer.reject(err);
+  });
+
+  return defer.promise;
+}
+
+function createCatalogForeignKeys(catalog) {
+  var defer = Q.defer();
+
+  if (!config.schemas) {
+      return defer.resolve(), defer.promise;
+  }
+
+  var fks = [], schema, table;
+  for (var schemaName in catalog.schemas) {
+    if (!catalog.schemas.hasOwnProperty(schemaName)) continue;
+
+    schema = catalog.schemas[schemaName];
+    for (var tableName in schema.tables) {
+      if (!schema.tables.hasOwnProperty(tableName)) continue;
+
+      table = schema.tables[tableName];
+      if (!table.foreignKeys) continue;
+      fks.push(...table.foreignKeys);
+    }
+  }
+
+  var url = schema.url + '/catalog/' + schema.catalog.id + "/schema/";
+  http.post(url, fks).then(function (response) {
+    console.log(fks.length + " foreignkeys created for the given schemas!");
+    defer.resolve();
+  }).catch(function (err) {
+    defer.reject(err);
+  });
+
+  return defer.promise;
+}
