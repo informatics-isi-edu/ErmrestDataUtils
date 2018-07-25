@@ -16,7 +16,7 @@ var configuration = {
 	{
 	    "catalog": { // required
 	        //"id": 1  //existing id of a catalog
-	        //"acls": {} 
+	        //"acls": {}
 	    },
 	    "schema": { // required
 	        "name": "product",
@@ -50,6 +50,38 @@ ermrestUtils.importData(configuration).then(function(data) {
 	console.log("Unable to import data");
 	console.dir(err);
 });
+```
+
+### Import Multiple Schemas
+If you want to create multiple schemas at once, you can use the following method with the given configuration structure.
+
+```javascript
+var configuration = {
+  setup: { // required
+    "catalog": { // (optional)
+      "id": "existing catalog id", // pass this if you want to use an existing catalog
+      "acls": {} // pas the list of acls that you want to add for the catalog
+    },
+    "schemas": { // list all the schemas that you want to create here
+      "schema name 1": {
+        "path": "path to the schema document file",
+        "entities": "the folder path from where the json for the entities will be picked for import"
+      },
+      ...
+    }
+  },
+  url: "ermrest url", //required
+  authCookie: "webauthn cookie" //required
+};
+
+var ermrestUtils = require('ermrest-data-utils');
+ermrestUtils.createSchemasAndEntities(configuration).then(function(data) {
+	console.log("Data imported with catalogId " + data.catalogId);
+}, function(err) {
+	console.log("Unable to import data");
+	console.dir(err);
+});
+
 ```
 
 ### Import ACL's explicitly

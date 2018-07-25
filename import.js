@@ -690,9 +690,10 @@ exports.createSchemasAndEntities = function (settings) {
       defer.resolve({catalogId: catalog.id});
     }
   }).catch(function (err) {
-    console.log("catch error!");
+    console.log("encountered an error while bulk creation.");
     console.log(err);
-    defer.reject(err);
+    if (catalog && catalog.id) defer.reject({ catalogId: catalog.id });
+		else defer.reject(err || {});
   });
 
   return defer.promise;
