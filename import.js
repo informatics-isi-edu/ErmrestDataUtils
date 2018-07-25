@@ -602,17 +602,34 @@ var createForeignKeys = function(schema) {
 };
 
 
+/**
+ * The acceptable settings object format:
+ * {
+ *  url: "the ermrest url"
+ *  authCookie: "a valid webauthn cookie"
+ *  catalog: {} // if you want to test on existsing schema provide `id`, it could have `acls`.
+ *  schemas: { (optional)
+ *    "name of schema" : {
+ *      path: "path to the schema definition",
+ *      entities: "path to entities folder. it should have json files with table name" (optional)
+ *    }, ...
+ *    // list all the schemas that you want to be created
+ *  }
+ * }
+ *
+ * NOTE This function cannot be used to update schema, it will only creat new schemas and tables in the schema.
+ *
+ * This function will
+ * - create a new catalog or use the given catalog.
+ * - if the schemas exists in the given settings:
+ *   - create all the given schemas in a bulk request to ermrest.
+ *   - insert the given entities to the tables.
+ *   - create all the foreignkeys in the schemas in a bulk request.
+ *
+ * @param  {Object} settings the object that tells which schemas should be created.
+ * @return {Promise}
+ */
 exports.createSchemasAndEntities = function (settings) {
-  /**
-  * {
-  *  url
-  *  authCookie
-  *  catalog: {} // if you want to test on existsing schema provide `id`, it could have `acls`
-  *  schemas: [
-  *    {path: "", entities: ""}
-  *  ]
-  * }
-  */
   var defer = Q.defer();
 
   var error = "";
@@ -628,9 +645,18 @@ exports.createSchemasAndEntities = function (settings) {
     return defer.reject(error), defer.promise;
   }
 
+  // TODO this pattern of having a global config object seems wrong to me.
+  // I didn't want to make a lot of changes to the existsing code, but we might
+  // want to consider removing this and passing it to functions that need it.
   config = settings.setup;
   config.url = settings.url || 'https://dev.isrd.isi.edu/ermrest';
 
+  // other parts of the existing code rely on this object
+  if (!config.catalog) {
+    config.catalog = {};
+  }
+
+  // set the cookie for all the http requests.
   http.setDefaults({
     headers: { 'Cookie': settings.authCookie || "a=b;" },
     json: true,
@@ -643,7 +669,7 @@ exports.createSchemasAndEntities = function (settings) {
     id: config.catalog.id
   });
 
-  console.log("authCookie: ", settings.authCookie);
+  console.log("testing the given authCookie:", settings.authCookie);
   http.get(config.url.replace('ermrest', 'authn') + "/session").then(function(response) {
     console.log("Valid session found.");
     // create catalog or use the existing
@@ -652,8 +678,10 @@ exports.createSchemasAndEntities = function (settings) {
     // append all schemas together and send a request to create them
     return createSchemas(catalog);
   }).then(function () {
+    // insert all the entities
     return importCatalogEntities(catalog);
   }).then(function () {
+    // create all the foreign keys
     return createCatalogForeignKeys(catalog);
   }).then(function () {
     if (config.schemas) {
@@ -671,9 +699,16 @@ exports.createSchemasAndEntities = function (settings) {
 };
 
 
+/**
+ * Create all the schemas in the catalog based on the global config object.
+ * It will attach the schemas object to the catalog object too.
+ * @param  {Catalog} catalog
+ * @return {Promise}
+ */
 function createSchemas(catalog) {
   var defer = Q.defer();
 
+  // if config.schemas does not exist, we don't want to create new schemas
   if (!config.schemas) {
       return defer.resolve(), defer.promise;
   }
@@ -683,6 +718,7 @@ function createSchemas(catalog) {
   for(var schemaName in config.schemas) {
     if (!config.schemas.hasOwnProperty(schemaName)) continue;
 
+    // create the schema object, so we can attach to the catalog
     schema = new Schema({
       url: config.url,
       catalog: catalog,
@@ -690,10 +726,11 @@ function createSchemas(catalog) {
     });
 
     if (schemaName != schema.name) {
-      return defer.reject("given schema name (" + schemaName + ") in configuraion is not the same as schema_name."), defer.promise;
+      return defer.reject("given schema name (" + schemaName + ") in configuraion is not the same as schema_name in document."), defer.promise;
     }
 
-    // create table objects in the schema (this removes foreignkey content)
+    // create table objects in the schema
+    // (this removes foreignkey content which allows creation of schemas one by one)
     schema.tables = {};
     for (var k in schema.content.tables) {
       if (!schema.content.tables.hasOwnProperty(k)) continue;
@@ -707,15 +744,15 @@ function createSchemas(catalog) {
       schema.tables[table.name] = table;
     }
 
-    // add the schema to list
+    // add the schema to list for the bulk request
     schemaDocs.push(schema.content);
 
     // update catalog.schemas
     catalog.schemas[schema.name] = schema;
   }
 
+  // send the bulk request to create the schemas
   var url = schema.url + '/catalog/' + schema.catalog.id + "/schema/";
-  // TODO this can be in form of {'schemas': {'schemaname': {}}}
   http.post(url, schemaDocs).then(function () {
     console.log("Created the following schemas: " + schemaDocs.map(function (s) {return s.schema_name;}).join(", "));
     defer.resolve();
@@ -726,7 +763,11 @@ function createSchemas(catalog) {
   return defer.promise;
 }
 
-
+/**
+ * Import all the entities for all the schemas that are defined in the config.schemas
+ * @param  {Catalog} catalog
+ * @return {Promise}
+ */
 function importCatalogEntities(catalog) {
   var defer = Q.defer();
 
@@ -743,6 +784,7 @@ function importCatalogEntities(catalog) {
       if (!schema.tables.hasOwnProperty(tableName)) continue;
       if (!config.schemas[schemaName].entities) continue;
 
+      // create a request to insert entities for each table
       promises.push(insertEntitiesForATable(schema.tables[tableName], schemaName, config.schemas[schemaName].entities));
     }
   }
@@ -760,6 +802,11 @@ function importCatalogEntities(catalog) {
   return defer.promise;
 }
 
+/**
+ * bulk request to create all the foreignkeys in a catalog
+ * @param  {Catalog} catalog
+ * @return {Promise}
+ */
 function createCatalogForeignKeys(catalog) {
   var defer = Q.defer();
 
@@ -781,6 +828,7 @@ function createCatalogForeignKeys(catalog) {
     }
   }
 
+  // bulk request for creating the foreignkey
   var url = schema.url + '/catalog/' + schema.catalog.id + "/schema/";
   http.post(url, fks).then(function (response) {
     console.log(fks.length + " foreignkeys created for the given schemas.");
