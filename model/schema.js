@@ -30,7 +30,8 @@ Schema.prototype.create = function(schemaName) {
 	var defer = Q.defer(), self = this;
 	this.name = schemaName || this.name;
 	if (!this.catalog.id || !this.name) return defer.reject("No Catalog or Name set : create schema function"), defer.promise;
-	http.post(this.url + '/catalog/' + this.catalog.id + "/schema/" + utils._fixedEncodeURIComponent(this.name)).then(function(response) {
+    var schemaUrl = this.url + '/catalog/' + this.catalog.id + "/schema/" + utils._fixedEncodeURIComponent(this.name);
+	http.post(schemaUrl).then(function(response) {
 		return self.createAnnotation();
 	}).then(function() {
 		return self.createComment();
@@ -39,6 +40,7 @@ Schema.prototype.create = function(schemaName) {
 	}).then(function() {
 		defer.resolve(self);
 	}, function(err) {
+        console.log("Table url: ", schemaUrl);
 		defer.reject(err, self);
 	});
 
@@ -53,7 +55,7 @@ Schema.prototype.create = function(schemaName) {
 Schema.prototype.remove = function() {
 	var defer = Q.defer(), self = this;
 	if (!this.catalog.id || !this.name) return defer.reject("No Catalog or Name set: remove schema function"), defer.promise;
-	
+
 	http.delete(this.url + '/catalog/' + this.catalog.id + "/schema/" + utils._fixedEncodeURIComponent(this.name)).then(function() {
 		defer.resolve(self);
 	}, function(err) {
@@ -65,9 +67,12 @@ Schema.prototype.remove = function() {
 
 var annotate = function(self, key, value) {
 	var d = Q.defer();
-	http.put(self.url + '/catalog/' + self.catalog.id + "/schema/" + utils._fixedEncodeURIComponent(self.name) + "/annotation/" + utils._fixedEncodeURIComponent(key), value).then(function(response) {
+    var url = self.url + '/catalog/' + self.catalog.id + "/schema/" + utils._fixedEncodeURIComponent(self.name) + "/annotation/" + utils._fixedEncodeURIComponent(key);
+	http.put(url, value).then(function(response) {
 		d.resolve();
 	}, function(err) {
+        console.log(url);
+        console.log(value);
 		d.reject(err);
 	});
 	return d.promise;
@@ -95,9 +100,13 @@ Schema.prototype.createAnnotation = function() {
 Schema.prototype.createComment = function() {
 	var d = Q.defer();
 	if (this.content.comment && this.content.comment.trim() != '') {
-		http.put({ url: this.url + '/catalog/' + this.catalog.id + "/schema/" + utils._fixedEncodeURIComponent(this.name) + "/comment", body: this.content.comment, json: false }).then(function(response) {
+        var url = this.url + '/catalog/' + this.catalog.id + "/schema/" + utils._fixedEncodeURIComponent(this.name) + "/comment";
+        var body = this.content.comment;
+		http.put({ url: url, body: body, json: false }).then(function(response) {
 			d.resolve();
 		}, function(err) {
+            console.log(url);
+            console.log(body);
 			d.reject(err);
 		});
 	} else {
@@ -120,7 +129,7 @@ Schema.prototype.setDefaultTable = function() {
 			(table['annotations']['comment'].contains('exclude') || table['annotations']['comment'].contains('association'));
 		var nested = table['annotations'] != null && table['annotations']['comment'] != null &&
 			table['annotations']['comment'].contains('nested');
-		
+
 		if (!exclude && !nested) {
 			rootTables.push(table['table_name']);
 			if (table['annotations'] != null && table['annotations']['comment'] != null && table['annotations']['comment'].contains('default')) {
@@ -128,7 +137,7 @@ Schema.prototype.setDefaultTable = function() {
 			}
 		}
 	};
-	
+
 	if (defaultTable == null) defaultTable = tables[rootTables[0]];
 	this.defaultTable = defaultTable;
 	return this.defaultTable;
@@ -175,10 +184,13 @@ Schema.addACLs = function(url, catalogId, schemaName, acls) {
 Schema.addACL = function(url, catalogId, schemaName, aclKey, value) {
 	var defer = Q.defer();
 	if (!catalogId || (typeof aclKey !== 'string')) return defer.reject("No Id or ACL set : addACL Schema function"), defer.promise;
-	
-	http.put(url + '/catalog/' + catalogId + "/schema/" + utils._fixedEncodeURIComponent(schemaName) + "/acl/" + aclKey,  value).then(function(response) {
+
+    var aclUrl = url + '/catalog/' + catalogId + "/schema/" + utils._fixedEncodeURIComponent(schemaName) + "/acl/" + aclKey;
+	http.put(aclUrl, value).then(function(response) {
 		defer.resolve();
 	}, function(err) {
+        console.log(aclUrl);
+        console.log(value);
 		defer.reject(err);
 	});
 

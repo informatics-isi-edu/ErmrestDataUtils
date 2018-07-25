@@ -76,12 +76,16 @@ Table.prototype.create = function(timeout) {
 
 	setTimeout(function() {
 
-		http.post(self.url + '/catalog/' + self.catalog.id + "/schema/" + utils._fixedEncodeURIComponent(self.schema.name) + "/table", self.content).then(function(response) {
+        var logContent = self.content;
+        var url = self.url + '/catalog/' + self.catalog.id + "/schema/" + utils._fixedEncodeURIComponent(self.schema.name) + "/table";
+		http.post(url, self.content).then(function(response) {
 			self.content = response.data;
 			self.name = self.content.table_name;
 			console.log("Table " + self.content.table_name + " created");
 			defer.resolve(self);
 		}, function(err) {
+            console.log(url);
+            console.log(logContent);
 			defer.reject(err, self);
 		});
 
