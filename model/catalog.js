@@ -83,7 +83,7 @@ Catalog.addACLs = function(url, id, acls) {
 Catalog.addACL = function(url, id, aclKey, value) {
 	var defer = Q.defer();
 	if (!id || (typeof aclKey !== 'string')) return defer.reject("No Id or ACL set : addACL catalog function"), defer.promise;
-	
+
 	http.put(url + '/catalog/' + id + "/acl/" + aclKey,  value).then(function(response) {
 		defer.resolve();
 	}, function(err) {
@@ -102,7 +102,7 @@ Catalog.addACL = function(url, id, aclKey, value) {
 Catalog.prototype.remove = function() {
 	var defer = Q.defer(), self = this;
 	if (!this.id) return defer.reject("No Id set : remove catalog function"), defer.promise;
-	
+
 	http.delete(this.url + '/catalog/' + this.id).then(function() {
 		defer.resolve(self);
 	}, function(err) {
@@ -118,11 +118,11 @@ Catalog.prototype.remove = function() {
  * A synchronous method that sets the default schema on basis of current catalog schemas.
  */
 Catalog.prototype.setSchemas = function() {
-	var defaultSchema = null, schemas = this.content.schemas;	
+	var defaultSchema = null, schemas = this.content.schemas;
 	this.schemas = {};
 	for (var k in schemas) {
-		var schema = new Schema({ schema: schemas[k], catalog: this, name: schemas[k].schema_name });		
-		var annotations = schemas[k].annotations; 
+		var schema = new Schema({ schema: schemas[k], catalog: this, name: schemas[k].schema_name });
+		var annotations = schemas[k].annotations;
 
 		if (!defaultSchema && annotations != null && annotations['comment'] != null && annotations['comment'].contains('default')) {
 			defaultSchema = schema
@@ -132,7 +132,7 @@ Catalog.prototype.setSchemas = function() {
 
 		this.schemas[schema.name] = schema;
 	}
-	
+
 	if (defaultSchema == null) {
 		for (var k in schemas) {
 			var s = schemas[k];
@@ -145,7 +145,7 @@ Catalog.prototype.setSchemas = function() {
 			}
 			if (defaultSchema != null) break;
 		}
-		
+
 		if (defaultSchema == null) {
 			// get the first schema from the catalog
 			for (var k in schemas) {
