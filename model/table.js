@@ -20,6 +20,7 @@ var Table = function(options) {
 	this.name = this.content.table_name;
 	this.foreignKeys = this.content.foreign_keys || [];
 	this.content.schema_name = this.schema.name;
+  this.content.foreign_keys = [];
 	this.setTableParameters = function(name) {
 		this.content = {
 		  "comment": "",
@@ -33,6 +34,9 @@ var Table = function(options) {
 		};
 		this.name = name;
 	};
+
+  // add the system columns
+	this.addSystemColumsAndKeys();
 };
 
 Table.prototype.addSystemColumsAndKeys = function() {
@@ -64,15 +68,9 @@ Table.prototype.addSystemColumsAndKeys = function() {
  * An asynchronous method that returns a promise. If fulfilled, it creates a new table.
  */
 Table.prototype.create = function(timeout) {
-	var defer = Q.defer(), self  = this;
+	var self  = this;
 
 	if (!this.catalog.id || !this.schema.name || !this.name) return defer.reject("No catalog or schema set : create table function"), defer.promise;
-
-	this.content.schema_name = this.schema.name;
-	this.foreignKeys = this.content.foreign_keys;
-	this.content.foreign_keys = [];
-
-	this.addSystemColumsAndKeys();
 
 	setTimeout(function() {
 
