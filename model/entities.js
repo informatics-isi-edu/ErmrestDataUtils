@@ -18,11 +18,11 @@ var Entities = function(options) {
 	this.catalog = this.table.catalog;
 };
 
-var create = function(entity, self) {
+var create = function(entities, self) {
 	var autogenColumns = [], defer = Q.defer();
 	self.table.content.column_definitions.forEach(function(c) {
-		if (!entity.hasOwnProperty(c.name)) {
-			if (c.type.typename.indexOf('serial') === 0 && !entity.hasOwnProperty(c.name)) {
+		if (!entities[0].hasOwnProperty(c.name)) {
+			if (c.type.typename.indexOf('serial') === 0 && !entities[0].hasOwnProperty(c.name)) {
 				autogenColumns.push(utils._fixedEncodeURIComponent(c.name));
 			} else if (c.default !== null && c.default !== undefined) {
 				autogenColumns.push(utils._fixedEncodeURIComponent(c.name));
@@ -33,11 +33,11 @@ var create = function(entity, self) {
 	var autogenParam = (autogenColumns.length) ? ("?defaults=" + autogenColumns.join(',')) : "";
 
     var url = self.url + "/catalog/" + self.catalog.id + "/entity/" + utils._fixedEncodeURIComponent(self.schema.name) + ":" + utils._fixedEncodeURIComponent(self.table.name) + autogenParam;
-	http.post(url, [entity]).then(function(response) {
+	http.post(url, entities).then(function(response) {
 		defer.resolve(response.data[0]);
 	}, function(err) {
         console.log(url);
-        console.log(entity);
+        console.log(entities);
 		defer.reject(err, self);
 	});
 
@@ -60,12 +60,7 @@ Entities.prototype.create = function(options) {
 		return defer.promise;
 	}
 
-	var self = this, promises = [];
-	options.entities.forEach(function(e) {
-		promises.push(create(e, self));
-	});
-
-	Q.all(promises).then(function(data) {
+	create(options.entities, this).then(function(data) {
 		self.table.entityCount = options.entities.length;
 		defer.resolve(data);
 	}, function(err) {
