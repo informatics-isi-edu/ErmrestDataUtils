@@ -34,7 +34,7 @@ var create = function(entities, self) {
 
     var url = self.url + "/catalog/" + self.catalog.id + "/entity/" + utils._fixedEncodeURIComponent(self.schema.name) + ":" + utils._fixedEncodeURIComponent(self.table.name) + autogenParam;
 	http.post(url, entities).then(function(response) {
-		defer.resolve(response.data[0]);
+		defer.resolve(response.data);
 	}, function(err) {
         console.log(url);
         console.log(entities);
