@@ -135,29 +135,29 @@ Table.prototype.addForeignKey = function(foreignKey) {
 };
 
 /**
- * @param {acls} An array of acl objects
+ * @param {Object} acl object
  * @returns {Promise} Returns a promise.
  * @desc
  * An asynchronous method that returns a promise. If fulfilled, it adds the acls for the table.
  */
 Table.addACLs = function(url, catalogId, schemaName, tableName, acls) {
-	var defer = Q.defer();
-	if (!catalogId) return defer.reject("No catalogId set : addACL Table function"), defer.promise;
-	if (!acls || acls.length == 0) defer.resolve();
+  return new Promise(function (resolve, reject) {
+    if (typeof acls != 'object' || !acls) resolve();
+    if (!catalogId) return reject("No catalogId set : addACL Table function");
 
-	var promises = [];
+    var aclKeys = Object.keys(acls);
+    var next = function () {
+        if (aclKeys.length === 0) return resolve();
 
-	for (var acl in acls) {
-		promises.push(Table.addACL(url, catalogId, schemaName, tableName, acl, acls[acl]));
-	}
-
-	Q.all(promises).then(function() {
-		defer.resolve();
-	}, function(err) {
-		defer.reject(err);
-	});
-
-	return defer.promise;
+        var aclKey = aclKeys.shift();
+        Table.addACL(url, catalogId, schemaName, tableName, aclKey, acls[aclKey]).then(function () {
+          next();
+        }).catch(function (err) {
+          reject(err);
+        });
+    }
+    next();
+  });
 };
 
 /**

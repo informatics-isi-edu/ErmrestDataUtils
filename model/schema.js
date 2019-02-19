@@ -85,16 +85,22 @@ var annotate = function(self, key, value) {
  */
 Schema.prototype.createAnnotation = function() {
 	var annotations = this.content.annotations || {}, defer = Q.defer(), self = this, promises = [];
-	for (var k in annotations) {
-		if (annotations[k] != null) promises.push(annotate(self, k, annotations[k]));
-	}
-
-	Q.all(promises).then(function() {
-		defer.resolve(self);
-	}, function(err) {
-		defer.reject(err);
-	});
-	return defer.promise;
+  var annotKeys = Object.keys(annotations);
+  return new Promise(function (resolve, reject) {
+    var next = function () {
+        if (annotKeys.length === 0) {
+          resolve(self);
+        } else {
+          var k = annotKeys.shift();
+          annotate(self, k, annotations[k]).then(function () {
+            next();
+          }).catch(function (err) {
+            reject(err);
+          })
+        }
+    }
+    next();
+  });
 };
 
 Schema.prototype.createComment = function() {
@@ -148,29 +154,27 @@ Schema.prototype.addACLs = function() {
 };
 
 /**
- * @param {acls} An array of acl objects
+ * @param {Object} the ACLs object
  * @returns {Promise} Returns a promise.
  * @desc
  * An asynchronous method that returns a promise. If fulfilled, it adds the acls for the schema.
  */
 Schema.addACLs = function(url, catalogId, schemaName, acls) {
-	var defer = Q.defer();
-	if (!catalogId) return defer.reject("No Id set : addACL Schema function"), defer.promise;
-	if (!acls || acls.length == 0) defer.resolve();
+  return new Promise(function (resolve, reject) {
+    if (typeof acls != 'object' || !acls) return resolve();
+    if (!catalogId) return reject("No Id set : addACL Schema function");
 
-	var promises = [];
+    var aclKeys = Object.keys(acls);
+    var next = function () {
+      if (aclKeys.length === 0) return resolve();
 
-	for (var acl in acls) {
-		promises.push(Schema.addACL(url, catalogId, schemaName, acl, acls[acl]));
-	}
-
-	Q.all(promises).then(function() {
-		defer.resolve();
-	}, function(err) {
-		defer.reject(err);
-	});
-
-	return defer.promise;
+      var aclKey = aclKeys.shift();
+      Schema.addACL(url, catalogId, schemaName, aclKey, acls[aclKey]).then(next).catch(function (err) {
+        reject(err);
+      });
+    }
+    next();
+  });
 };
 
 /**

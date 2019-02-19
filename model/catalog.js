@@ -53,23 +53,21 @@ Catalog.prototype.addACLs = function(acls) {
  * An asynchronous method that returns a promise. If fulfilled, it adds the acls for the catalog.
  */
 Catalog.addACLs = function(url, id, acls) {
-	var defer = Q.defer();
-	if (!id) return defer.reject("No Id set : addACL catalog function"), defer.promise;
-	if (!acls || acls.length == 0) defer.resolve();
+  return new Promise(function (resolve, reject) {
+    if (typeof acls != 'object' || !acls) return resolve();
+    if (!id) return reject("No Id set : addACL catalog function");
 
-	var promises = [];
+    var aclKeys = Object.keys(acls);
+    var next = function () {
+        if (aclKeys.length === 0) return resolve();
 
-	for (var acl in acls) {
-		promises.push(Catalog.addACL(url, id, acl, acls[acl]));
-	}
-
-	Q.all(promises).then(function() {
-		defer.resolve();
-	}, function(err) {
-		defer.reject(err);
-	});
-
-	return defer.promise;
+        var aclKey = aclKeys.shift();
+        Catalog.addACL(url, id, aclKey, acls[aclKey]).then(next).catch(function (err) {
+          reject(err);
+        });
+    }
+    next();
+  });
 };
 
 /**
