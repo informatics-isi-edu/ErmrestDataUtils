@@ -11,29 +11,31 @@ var utils = require('./utils.js');
 var Column = function() {};
 
 /**
- * @param {acls} An array of acl objects
+ * @param {Object} acl object
  * @returns {Promise} Returns a promise.
  * @desc
  * An asynchronous method that returns a promise. If fulfilled, it adds the acls for the Column.
  */
 Column.addACLs = function(url, catalogId, schemaName, tableName, columnName, acls) {
-	var defer = Q.defer();
-	if (!catalogId) return defer.reject("No catalogId set : addACL Column function"), defer.promise;
-	if (!acls || acls.length == 0) defer.resolve();
+  return new Promise(function (resolve, reject) {
+    if (typeof acls != 'object' || !acls) resolve();
+    if (!catalogId) return reject("No catalogId set : addACL Column function");
 
-	var promises = [];
-
-	for (var acl in acls) {
-		promises.push(Column.addACL(url, catalogId, schemaName, tableName, columnName, acl, acls[acl]));
-	}
-
-	Q.all(promises).then(function() {
-		defer.resolve();
-	}, function(err) {
-		defer.reject(err);
-	});
-
-	return defer.promise;
+    var aclKeys = Object.keys(acls);
+    var next = function () {
+        if (aclKeys.length === 0) {
+          resolve();
+        } else {
+          var aclKey = aclKeys.shift();
+          Column.addACL(url, catalogId, schemaName, tableName, columnName, aclKey, acls[aclKey]).then(function () {
+            next();
+          }).catch(function (err) {
+            reject(err);
+          })
+        }
+    }
+    next();
+  });
 };
 
 /**
@@ -47,7 +49,7 @@ Column.addACLs = function(url, catalogId, schemaName, tableName, columnName, acl
 Column.addACL = function(url, catalogId, schemaName, tableName, columnName, aclKey, value) {
 	var defer = Q.defer();
 	if (!catalogId || (typeof aclKey !== 'string')) return defer.reject("No catalogId or ACL set : addACL Column function"), defer.promise;
-	
+
 	http.put(url + '/catalog/' + catalogId + "/schema/" + utils._fixedEncodeURIComponent(schemaName) + "/table/" + utils._fixedEncodeURIComponent(tableName) + "/column/" + utils._fixedEncodeURIComponent(columnName) + "/acl/" + aclKey,  value).then(function(response) {
 		defer.resolve();
 	}, function(err) {

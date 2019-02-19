@@ -157,7 +157,6 @@ exports.importData = function(options) {
 };
 
 exports.importACLS = function(options) {
-	var defer = Q.defer();
 	http.setDefaults({
 	    headers: { 'Cookie': options.authCookie || "a=b;" },
 	    json: true,
@@ -166,37 +165,76 @@ exports.importACLS = function(options) {
 
 	var config = options.setup, url = options.url;
 
-	var promises = [];
-
+  // create list of acl requests
+	var aclRequests = [];
 	if (config.catalog && config.catalog) {
 		var catalog = config.catalog;
-		promises.push(Catalog.addACLs(url, catalog.id, catalog.acls));
+    if (catalog.acls) {
+      aclRequests.push({
+        "type": "catalog", "acls": catalog.acls,
+        "catalogId": catalog.id
+      });
+    }
 
 		for (var schemaName in catalog.schemas) {
 			var schema = catalog.schemas[schemaName];
-			promises.push(Schema.addACLs(url, catalog.id, schemaName, schema.acls));
+      if (schema.acls) {
+        aclRequests.push({
+          "type": "schema", "acls": schema.acls,
+          "catalogId": catalog.id, "schemaName": schemaName
+        });
+      }
 
 			for (var tableName in schema.tables) {
 				var table = schema.tables[tableName];
-				promises.push(Table.addACLs(url, catalog.id, schemaName, tableName, table.acls));
+        if (table.acls) {
+          aclRequests.push({
+            "type": "table", "acls": table.acls,
+            "catalogId": catalog.id, "schemaName": schemaName, "tableName": tableName
+          });
+        }
 
 				for (var columnName in table.columns) {
 					var column = table.columns[columnName];
-					promises.push(Column.addACLs(url, catalog.id, schemaName, tableName, columnName, column.acls));
+          if (column.acls) {
+            aclRequests.push({
+              "type": "column", "acls": column.acls,
+              "catalogId": catalog.id, "schemaName": schemaName, "tableName": tableName, "columnName": columnName
+            });
+          }
 				}
 			}
 		}
 	}
 
-	if (promises.length === 0) defer.resolve();
+  // process the acl requests
+  return new Promise(function (resolve, reject) {
+    var catchFn = function (err) {
+      return reject(err);
+    };
 
-	Q.all(promises).then(function() {
-		defer.resolve();
-	}, function(err) {
-		defer.reject(err);
-	});
+    var next = function () {
+      if (aclRequests.length === 0) return resolve();
 
-	return defer.promise;
+      var req = aclRequests.shift();
+      switch (req.type) {
+        case "catalog":
+          Catalog.addACLs(url, req.catalogId, req.acls).then(next).catch(catchFn);
+          break;
+        case "schema":
+          Schema.addACLs(url, req.catalogId, req.schemaName, req.acls).then(next).catch(catchFn);
+          break;
+        case "table":
+          Table.addACLs(url, req.catalogId, req.schemaName, req.tableName, req.acls).then(next).catch(catchFn);
+          break;
+        case "column":
+          Column.addACLs(url, req.catalogId, req.schemaName, req.tableName, req.columnName, req.acls).then(next).catch(catchFn);
+          break;
+      }
+
+    };
+    next();
+  });
 };
 
 /**
@@ -770,13 +808,12 @@ function createSchemas(catalog) {
  * @return {Promise}
  */
 function importCatalogEntities(catalog) {
-  var defer = Q.defer();
-
   if (!config.schemas) {
       return defer.resolve(), defer.promise;
   }
 
-  var promises = [], schema, table;
+  // create a flat list of table names
+  var tables = [], schema, table;
   for (var schemaName in catalog.schemas) {
     if (!catalog.schemas.hasOwnProperty(schemaName)) continue;
 
@@ -785,22 +822,23 @@ function importCatalogEntities(catalog) {
       if (!schema.tables.hasOwnProperty(tableName)) continue;
       if (!config.schemas[schemaName].entities) continue;
 
-      // create a request to insert entities for each table
-      promises.push(insertEntitiesForATable(schema.tables[tableName], schemaName, config.schemas[schemaName].entities));
+      tables.push(schema.tables[tableName]);
     }
   }
 
-  if (promises.length === 0) {
-    return defer.resolve(), defer.promise;
-  }
+  return new Promise(function (resolve, reject) {
+    var next = function () {
+      if (tables.length === 0) {
+        return resolve();
+      }
 
-  Q.all(promises).then(function () {
-    defer.resolve();
-  }).catch(function (err) {
-    defer.reject(err);
+      var t = tables.shift();
+      insertEntitiesForATable(t, t.schema.name, config.schemas[t.schema.name].entities).then(next).catch(function (err) {
+        reject(err);
+      });
+    };
+    next();
   });
-
-  return defer.promise;
 }
 
 /**
