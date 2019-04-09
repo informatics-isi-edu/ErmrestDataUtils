@@ -432,8 +432,8 @@ var createCatalog = function(catalog) {
 
             console.log("Creating catalog annotations...");
             return catalog.addAnnotations(annotations);
-        }).then(function () {
-            console.log("Annotations added");
+        }).then(function (message) {
+            console.log(message || "Annotations added");
 
             console.log("Updating catalog ACLs...");
             return catalog.addACLs(acls);

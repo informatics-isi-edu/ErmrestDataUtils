@@ -55,7 +55,7 @@ Catalog.prototype.addAnnotations = function(annotations) {
  */
 Catalog.addAnnotations = function(url, id, annotations) {
     return new Promise(function (resolve, reject) {
-        if (typeof annotations != 'object' || !annotations) return resolve();
+        if (typeof annotations != 'object' || !annotations) return resolve("No annotations to add");
 
         var keys = Object.keys(annotations);
         var next = function () {
