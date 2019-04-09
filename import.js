@@ -413,39 +413,40 @@ var removeTables = function(defer, catalogId, schemaName) {
  * @param {catalog}
  */
 var createCatalog = function(catalog) {
-	var defer = Q.defer();
-	var isNew = true;
-	var acls = config.catalog.acls;
-	var hasValidACLs = (typeof acls === "object") && (acls.constructor === Object)  && Object.keys(acls).length !== 0;
+    var defer = Q.defer();
+    var isNew = true;
+    var annotations = config.catalog.annotations;
+    var acls = config.catalog.acls;
 
-	if (!catalog) {
-		defer.resolve();
-	} else if (catalog.id && !config.catalog.acls) {
-		console.log("Catalog with id " + catalog.id + " already exists.");
-		defer.resolve();
-	} else {
-		if (catalog.id) isNew = false;
-		catalog.create().then(function() {
+    if (!catalog) {
+        defer.resolve();
+    } else if (catalog.id && !config.catalog.acls) {
+        console.log("Catalog with id " + catalog.id + " already exists.");
+        defer.resolve();
+    } else {
+        if (catalog.id) isNew = false;
+        catalog.create().then(function() {
 
-			if (isNew) console.log("Catalog created with id " + catalog.id);
-			else console.log("Catalog with id " + catalog.id + " already exists.");
+            if (isNew) console.log("Catalog created with id " + catalog.id);
+            else console.log("Catalog with id " + catalog.id + " already exists.");
 
-			if (hasValidACLs) {
-				console.log("Updating catalog ACLs...");
-				return catalog.addACLs(acls);
-			}
-			defer.resolve();
-		}).then(function() {
-			if (hasValidACLs) {
-				console.log("ACLS added: " + JSON.stringify(acls));
-			}
-			defer.resolve();
-		}, function(err) {
-			defer.reject(err);
-		});
-	}
+            console.log("Creating catalog annotations...");
+            return catalog.addAnnotations(annotations);
+        }).then(function () {
+            console.log("Annotations added");
 
-	return defer.promise;
+            console.log("Updating catalog ACLs...");
+            return catalog.addACLs(acls);
+        }).then(function(message) {
+            console.log(message || "ACLS added: " + JSON.stringify(acls));
+
+            defer.resolve();
+        }, function(err) {
+            defer.reject(err);
+        });
+    }
+
+    return defer.promise;
 };
 
 /**
@@ -688,7 +689,6 @@ exports.createSchemasAndEntities = function (settings) {
   // want to consider removing this and passing it to functions that need it.
   config = settings.setup;
   config.url = settings.url || 'https://dev.isrd.isi.edu/ermrest';
-
   // other parts of the existing code rely on this object
   if (!config.catalog) {
     config.catalog = {};
