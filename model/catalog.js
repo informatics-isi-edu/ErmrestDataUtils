@@ -57,39 +57,13 @@ Catalog.addAnnotations = function(url, id, annotations) {
     return new Promise(function (resolve, reject) {
         if (typeof annotations != 'object' || !annotations) return resolve("No annotations to add");
 
-        var keys = Object.keys(annotations);
-        var next = function () {
-            if (keys.length === 0) return resolve();
-
-            var key = keys.shift();
-            Catalog.addAnnotation(url, id, key, annotations[key]).then(next).catch(function (err) {
-                reject(err);
-            });
-        }
-        next();
+        http.put(url + '/catalog/' + id + "/annotation/", annotations).then(function(response) {
+            resolve();
+        }, function(err) {
+            reject(err);
+        });
     });
 }
-
-/**
- * @param {string} key - the key of the annotation
- * @param {Object} value - object containing the annotation definition (will be sent to ermret without any change).
- * @returns {Promise} Returns a promise.
- * @desc
- * An asynchronous method that returns a promise. If fulfilled, it adds the acl for the catalog.
- */
-Catalog.addAnnotation = function(url, id, key, value) {
-    var defer = Q.defer();
-    if (!id || (typeof key !== 'string')) return defer.reject("No Id or Annotation set : addAnnotation catalog function"), defer.promise;
-
-    console.log("value: ", value);
-    http.put(url + '/catalog/' + id + "/annotation/" + utils._fixedEncodeURIComponent(key), value).then(function(response) {
-        defer.resolve();
-    }, function(err) {
-        defer.reject(err);
-    });
-
-    return defer.promise;
-};
 
 Catalog.prototype.addACLs = function(acls) {
     return Catalog.addACLs(this.url, this.id, acls);
