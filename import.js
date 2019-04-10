@@ -420,7 +420,7 @@ var createCatalog = function(catalog) {
 
     if (!catalog) {
         defer.resolve();
-    } else if (catalog.id && !config.catalog.acls) {
+    } else if (catalog.id && !config.catalog.acls && !config.catalog.annotations) {
         console.log("Catalog with id " + catalog.id + " already exists.");
         defer.resolve();
     } else {
