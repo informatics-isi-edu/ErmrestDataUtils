@@ -1,5 +1,6 @@
 var Q = require('q');
 var http = require('request-q');
+var utils = require('./utils.js');
 var Schema = require('./schema.js');
 
 /* @namespace Catalog
@@ -42,8 +43,30 @@ Catalog.prototype.create = function() {
 	return defer.promise;
 };
 
+Catalog.prototype.addAnnotations = function(annotations) {
+    return Catalog.addAnnotations(this.url, this.id, annotations);
+};
+
+/**
+ * @param {Array} annotation - An array of annotation objects
+ * @returns {Promise} Returns a promise.
+ * @desc
+ * An asynchronous method that returns a promise. If fulfilled, it adds the annotations for the catalog.
+ */
+Catalog.addAnnotations = function(url, id, annotations) {
+    return new Promise(function (resolve, reject) {
+        if (typeof annotations != 'object' || !annotations) return resolve("No annotations to add");
+
+        http.put(url + '/catalog/' + id + "/annotation/", annotations).then(function(response) {
+            resolve();
+        }, function(err) {
+            reject(err);
+        });
+    });
+}
+
 Catalog.prototype.addACLs = function(acls) {
-	return Catalog.addACLs(this.url, this.id, acls);
+    return Catalog.addACLs(this.url, this.id, acls);
 };
 
 /**
@@ -54,7 +77,7 @@ Catalog.prototype.addACLs = function(acls) {
  */
 Catalog.addACLs = function(url, id, acls) {
   return new Promise(function (resolve, reject) {
-    if (typeof acls != 'object' || !acls) return resolve();
+    if (typeof acls != 'object' || !acls) return resolve("No ACLs to add");
     if (!id) return reject("No Id set : addACL catalog function");
 
     var aclKeys = Object.keys(acls);
@@ -77,7 +100,6 @@ Catalog.addACLs = function(url, id, acls) {
  * @desc
  * An asynchronous method that returns a promise. If fulfilled, it adds the acl for the catalog.
  */
-
 Catalog.addACL = function(url, id, aclKey, value) {
 	var defer = Q.defer();
 	if (!id || (typeof aclKey !== 'string')) return defer.reject("No Id or ACL set : addACL catalog function"), defer.promise;
