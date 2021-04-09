@@ -169,72 +169,91 @@ exports.importACLS = function(options) {
 	var aclRequests = [];
 	if (config.catalog && config.catalog) {
 		var catalog = config.catalog;
-    if (catalog.acls) {
-      aclRequests.push({
-        "type": "catalog", "acls": catalog.acls,
-        "catalogId": catalog.id
-      });
-    }
+        if (catalog.acls) {
+            aclRequests.push({
+                "type": "catalog", "acls": catalog.acls,
+                "catalogId": catalog.id
+            });
+        }
 
 		for (var schemaName in catalog.schemas) {
 			var schema = catalog.schemas[schemaName];
-      if (schema.acls) {
-        aclRequests.push({
-          "type": "schema", "acls": schema.acls,
-          "catalogId": catalog.id, "schemaName": schemaName
-        });
-      }
+            if (schema.acls) {
+                aclRequests.push({
+                    "type": "schema", "acls": schema.acls,
+                    "catalogId": catalog.id, "schemaName": schemaName
+                });
+            }
 
 			for (var tableName in schema.tables) {
 				var table = schema.tables[tableName];
-        if (table.acls) {
-          aclRequests.push({
-            "type": "table", "acls": table.acls,
-            "catalogId": catalog.id, "schemaName": schemaName, "tableName": tableName
-          });
+                if (table.acls) {
+                    aclRequests.push({
+                        "type": "table", "acls": table.acls,
+                        "catalogId": catalog.id, "schemaName": schemaName, "tableName": tableName
+                    });
+                }
+                if (table.acl_bindings) { // dynamic acls
+                    aclRequests.push({
+                        "type": "table", "acl_bindings": table.acl_bindings,
+                        "catalogId": catalog.id, "schemaName": schemaName, "tableName": tableName
+                    });
+                }
+
+                for (var columnName in table.columns) {
+                    var column = table.columns[columnName];
+                    if (column.acls) {
+                        aclRequests.push({
+                          "type": "column", "acls": column.acls,
+                          "catalogId": catalog.id, "schemaName": schemaName, "tableName": tableName, "columnName": columnName
+                        });
+                    }
+                    if (column.acl_bindings) { // dynamic acls
+                        aclRequests.push({
+                          "type": "column", "acl_bindings": column.acl_bindings,
+                          "catalogId": catalog.id, "schemaName": schemaName, "tableName": tableName, "columnName": columnName
+                        });
+                    }
+                }
+            }
         }
+    }
 
-				for (var columnName in table.columns) {
-					var column = table.columns[columnName];
-          if (column.acls) {
-            aclRequests.push({
-              "type": "column", "acls": column.acls,
-              "catalogId": catalog.id, "schemaName": schemaName, "tableName": tableName, "columnName": columnName
-            });
-          }
-				}
-			}
-		}
-	}
+    // process the acl requests
+    return new Promise(function (resolve, reject) {
+        var catchFn = function (err) {
+            return reject(err);
+        };
 
-  // process the acl requests
-  return new Promise(function (resolve, reject) {
-    var catchFn = function (err) {
-      return reject(err);
-    };
+        var next = function () {
+            if (aclRequests.length === 0) return resolve();
 
-    var next = function () {
-      if (aclRequests.length === 0) return resolve();
-
-      var req = aclRequests.shift();
-      switch (req.type) {
-        case "catalog":
-          Catalog.addACLs(url, req.catalogId, req.acls).then(next).catch(catchFn);
-          break;
-        case "schema":
-          Schema.addACLs(url, req.catalogId, req.schemaName, req.acls).then(next).catch(catchFn);
-          break;
-        case "table":
-          Table.addACLs(url, req.catalogId, req.schemaName, req.tableName, req.acls).then(next).catch(catchFn);
-          break;
-        case "column":
-          Column.addACLs(url, req.catalogId, req.schemaName, req.tableName, req.columnName, req.acls).then(next).catch(catchFn);
-          break;
-      }
-
-    };
-    next();
-  });
+            var req = aclRequests.shift();
+            switch (req.type) {
+                case "catalog":
+                    Catalog.addACLs(url, req.catalogId, req.acls).then(next).catch(catchFn);
+                    break;
+                case "schema":
+                    Schema.addACLs(url, req.catalogId, req.schemaName, req.acls).then(next).catch(catchFn);
+                    break;
+                case "table":
+                    if (req.acls) {
+                        Table.addACLs(url, req.catalogId, req.schemaName, req.tableName, req.acls).then(next).catch(catchFn);
+                    } else if (req.acl_bindings) {
+                        Table.addACLBindings(url, req.catalogId, req.schemaName, req.tableName, req.acl_bindings).then(next).catch(catchFn);
+                    }
+                    break;
+                case "column":
+                    if (req.acls) {
+                        Column.addACLs(url, req.catalogId, req.schemaName, req.tableName, req.columnName, req.acls).then(next).catch(catchFn);
+                    }  else if (req.acl_bindings) {
+                        Column.addACLBindings(url, req.catalogId, req.schemaName, req.tableName, req.columnName, req.acl_bindings).then(next).catch(catchFn);
+                    }
+                    break;
+            }
+        };
+        next();
+    });
 };
 
 /**

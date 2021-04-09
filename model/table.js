@@ -142,7 +142,7 @@ Table.prototype.addForeignKey = function(foreignKey) {
  */
 Table.addACLs = function(url, catalogId, schemaName, tableName, acls) {
   return new Promise(function (resolve, reject) {
-    if (typeof acls != 'object' || !acls) resolve();
+    if (typeof acls != 'object' || !acls) return resolve();
     if (!catalogId) return reject("No catalogId set : addACL Table function");
 
     var aclKeys = Object.keys(acls);
@@ -179,6 +179,27 @@ Table.addACL = function(url, catalogId, schemaName, tableName, aclKey, value) {
 	});
 
 	return defer.promise;
+};
+
+
+Table.addACLBindings = function (url, catalogId, schemaName, tableName, bindings) {
+    return new Promise(function (resolve, reject) {
+      if (typeof bindings != 'object' || !bindings) return resolve("No ACL bindings to add");
+      if (!catalogId) return reject("No catalogId set : addACLBindings Table function");
+
+      var bindingKeys = Object.keys(bindings);
+      if (bindingKeys.length === 0) return resolve();
+
+      var tableURL = url + '/catalog/' + catalogId + "/schema/";
+      tableURL += utils._fixedEncodeURIComponent(schemaName) + "/table/";
+      tableURL += utils._fixedEncodeURIComponent(tableName);
+      http.put(tableURL + "/acl_binding/", bindings).then(function (response) {
+        console.log(tableName + " acl_bindings added");
+          resolve();
+      }).catch(function (err) {
+          reject(err);
+      });
+    });
 };
 
 /**

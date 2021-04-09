@@ -85,6 +85,7 @@ Catalog.addACLs = function(url, id, acls) {
         if (aclKeys.length === 0) return resolve();
 
         var aclKey = aclKeys.shift();
+        // we cannot simply replace the existing doc (we don't know all the existing acls)
         Catalog.addACL(url, id, aclKey, acls[aclKey]).then(next).catch(function (err) {
           reject(err);
         });

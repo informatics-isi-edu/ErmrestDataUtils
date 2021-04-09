@@ -50,13 +50,38 @@ Column.addACL = function(url, catalogId, schemaName, tableName, columnName, aclK
 	var defer = Q.defer();
 	if (!catalogId || (typeof aclKey !== 'string')) return defer.reject("No catalogId or ACL set : addACL Column function"), defer.promise;
 
-	http.put(url + '/catalog/' + catalogId + "/schema/" + utils._fixedEncodeURIComponent(schemaName) + "/table/" + utils._fixedEncodeURIComponent(tableName) + "/column/" + utils._fixedEncodeURIComponent(columnName) + "/acl/" + aclKey,  value).then(function(response) {
+    var columnURL = url + '/catalog/' + catalogId + "/schema/";
+    columnURL += utils._fixedEncodeURIComponent(schemaName) + "/table/";
+    columnURL += utils._fixedEncodeURIComponent(tableName) + "/column/";
+    columnURL += utils._fixedEncodeURIComponent(columnName);
+	http.put(columnURL + "/acl/" + aclKey,  value).then(function(response) {
 		defer.resolve();
 	}, function(err) {
 		defer.reject(err);
 	});
 
 	return defer.promise;
+};
+
+Column.addACLBindings = function (url, catalogId, schemaName, tableName, columnName, bindings) {
+    return new Promise(function (resolve, reject) {
+      if (typeof bindings != 'object' || !bindings) return resolve("No ACL bindings to add");
+      if (!catalogId) return reject("No catalogId set : addACLBindings Clolumn function");
+
+      var bindingKeys = Object.keys(bindings);
+      if (bindingKeys.length === 0) return resolve();
+
+      var columnURL = url + '/catalog/' + catalogId + "/schema/";
+      columnURL += utils._fixedEncodeURIComponent(schemaName) + "/table/";
+      columnURL += utils._fixedEncodeURIComponent(tableName) + "/column/";
+      columnURL += utils._fixedEncodeURIComponent(columnName);
+      http.put(columnURL + "/acl_binding/", bindings).then(function (response) {
+          console.log(columnName + " acl_bindings added");
+          resolve();
+      }).catch(function (err) {
+          reject(err);
+      });
+    });
 };
 
 
