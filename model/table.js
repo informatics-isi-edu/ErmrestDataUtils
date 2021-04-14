@@ -187,14 +187,12 @@ Table.addACLBindings = function (url, catalogId, schemaName, tableName, bindings
       if (typeof bindings != 'object' || !bindings) return resolve("No ACL bindings to add");
       if (!catalogId) return reject("No catalogId set : addACLBindings Table function");
 
-      var bindingKeys = Object.keys(bindings);
-      if (bindingKeys.length === 0) return resolve();
-
+      // passing an empty {} bindings should be allowed.
+      // it allows us to remove any existing bindings
       var tableURL = url + '/catalog/' + catalogId + "/schema/";
       tableURL += utils._fixedEncodeURIComponent(schemaName) + "/table/";
       tableURL += utils._fixedEncodeURIComponent(tableName);
       http.put(tableURL + "/acl_binding/", bindings).then(function (response) {
-        console.log(tableName + " acl_bindings added");
           resolve();
       }).catch(function (err) {
           reject(err);
