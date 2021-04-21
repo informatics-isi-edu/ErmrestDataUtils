@@ -84,9 +84,9 @@ ermrestUtils.createSchemasAndEntities(configuration).then(function(data) {
 
 ```
 
-### Import ACL's explicitly
+### Import ACLs explicitly
 
-To import acl's explicitly you can call the `importACLs` method and pass a configuration object. The format for the configuration is as follows
+To import ACLs explicitly you can call the `importACLs` method and pass a configuration object. This would allow you to pass both static and dynamic ACLs. The following is an example of using this API:
 
 ```js
 var dataUtils = require('ErmrestDataUtils');
@@ -104,16 +104,44 @@ var config = {
                 "acls": {
                     "enumerate": ["*"]
                 },
+                "acl_bindings": {
+                    "allow_delete_on_row_1": {
+                        "types": ["delete"],
+                        "projection": [
+                            {"filter": "id", "operand": 1}, "id"
+                        ],
+                        "projection_type": "nonnull"
+                    }
+                },
                 "tables": {
                     "accommodation": {
                         "acls": {
                             "select": ["userid1", "userid2"]
                         },
+                        "acl_bindings": {
+                            "allow_update_on_row_1": {
+                                "types": ["update"],
+                                "projection": [
+                                    {"filter": "id", "operand": 1}, "id"
+                                ],
+                                "projection_type": "nonnull"
+                            }
+                        },
                         "columns": {
                             "id": {
                                 "acls": {
                                     "select": []
-                                }
+                                },
+                                "acl_bindings": {
+                                    "allow_update_on_row_1": false,
+                                    "allow_update_on_row_2": {
+                                        "types": ["update"],
+                                        "projection": [
+                                            {"filter": "id", "operand": 2}, "id"
+                                        ],
+                                        "projection_type": "nonnull"
+                                    }
+                                },
                             },
                             "title": {
                                 "acls": {
