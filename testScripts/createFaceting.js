@@ -26,8 +26,19 @@ dataUtils.importData(configuration).then(function(data) {
     console.log("Data imported with catalogId " + data.catalogId);
     console.log("Please remember to clean up the catalog.");
 
+    var acls = {
+        "select": [
+            "https://auth.globus.org/eae2035c-01d0-11e6-a311-c78c6eaeef83", // jchudy test
+            "https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b"  // Anyone in "isrd-staff" can read ACL
+        ],
+        "write": [
+            "https://auth.globus.org/eae2035c-01d0-11e6-a311-c78c6eaeef83", // jchudy test
+            "https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b"  // Anyone in "isrd-staff" can write ACL
+        ]
+    };
+
     // Anyone in "isrd-staff" can read ACL
-    return Catalog.addACLs(data.schema.url, data.catalogId, {"select": ["https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b"]});
+    return Catalog.addACLs(data.schema.url, data.catalogId, acls);
     // Anyone can read ACL
     // return Catalog.addACLs(data.schema.url, data.catalogId, {"select": ["*"]});
 }, function(err) {

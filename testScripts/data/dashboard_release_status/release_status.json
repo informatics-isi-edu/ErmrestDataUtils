@@ -1,0 +1,31 @@
+[
+    {"ID": "G-20", "Consortium": "GUDMAP", "Data_Type": "Sequencing: Replicate", "#_Records": "610 (374/236)", "#_Released": "142 (109/33)", "#_Created_in_Latest_Year": "39 (21/18)", "#_Released_in_Latest_Year": "36 (21/15)", "Latest_Year_Start_Date": "2020-01-01", "Last_Updated": "2020-09-01", "Schema_Table": "RNASeq:Replicate",
+        "Data_Type_Filter": {
+            "and": [{
+                "source": [{
+                    "outbound": ["RNASeq", "Replicate_Consortium_fkey"]
+                    }, "RID"],
+                "choices": ["Q-3K56"]
+            }, {
+                "source": [{
+                    "outbound": ["RNASeq", "Replicate_Curation_Status_fkey"]
+                }, "RID"],
+                "choices": ["Q-Y61M"]
+            }, {
+                "source": [{
+                    "outbound": ["RNASeq", "Replicate_Experiment_RID_fkey"]
+                }, {
+                    "outbound": ["RNASeq", "Experiment_Experiment_Type_fkey"]
+                }, "RID"],
+                "choices": ["Q-YJXW", "Q-YJXY", "Q-YJY0", "16-QKNT", "Q-YJY2"]
+            }]
+        }
+    },
+    {"ID": "G-17", "Consortium": "GUDMAP", "Data_Type": "Protocol", "#_Records": "81", "#_Released": "81", "#_Created_in_Latest_Year": "0", "#_Released_in_Latest_Year": "0", "Latest_Year_Start_Date": "2020-01-01", "Last_Updated": "2019-12-13", "Schema_Table": "Protocol:Protocol", "Data_Type_Filter": {"and": [{"source": [{"outbound": ["Protocol", "Protocol_Consortium_fkey"]}, "RID"], "choices": ["Q-3K56"]}, {"source": [{"outbound": ["Protocol", "Protocol_Curation_Status_fkey"]}, "RID"], "choices": ["Q-Y61M"]}]}},
+    {"ID": "G-09", "Consortium": "GUDMAP", "Data_Type": "Imaging: IHC", "#_Records": "1190", "#_Released": "1065", "#_Created_in_Latest_Year": "210", "#_Released_in_Latest_Year": "196", "Latest_Year_Start_Date": "2020-01-01", "Last_Updated": "2021-01-20", "Schema_Table": "Gene_Expression:Specimen", "Data_Type_Filter": {"and": [{"source": [{"outbound": ["Gene_Expression", "Specimen_Consortium_fkey"]}, "RID"], "choices": ["Q-3K56"]}, {"source": [{"outbound": ["Gene_Expression", "Specimen_Curation_Status_fkey"]}, "RID"], "choices": ["Q-Y61M"]}, {"source": [{"outbound": ["Gene_Expression", "Specimen_Assay_Type_fkey"]}, "RID"], "choices": ["16-2DFP"]}]}},
+    {"ID": "G-08", "Consortium": "GUDMAP", "Data_Type": "Imaging: ISH", "#_Records": "11454", "#_Released": "11232", "#_Created_in_Latest_Year": "0", "#_Released_in_Latest_Year": "0", "Latest_Year_Start_Date": "2020-01-01", "Last_Updated": "2020-05-18", "Schema_Table": "Gene_Expression:Specimen", "Data_Type_Filter": {"and": [{"source": [{"outbound": ["Gene_Expression", "Specimen_Consortium_fkey"]}, "RID"], "choices": ["Q-3K56"]}, {"source": [{"outbound": ["Gene_Expression", "Specimen_Curation_Status_fkey"]}, "RID"], "choices": ["Q-Y61M"]}, {"source": [{"outbound": ["Gene_Expression", "Specimen_Assay_Type_fkey"]}, "RID"], "choices": ["16-2DFR"]}]}},
+    {"ID": "G-07", "Consortium": "GUDMAP", "Data_Type": "Imaging: Histology", "#_Records": "389", "#_Released": "365", "#_Created_in_Latest_Year": "118", "#_Released_in_Latest_Year": "108", "Latest_Year_Start_Date": "2020-01-01", "Last_Updated": "2021-01-20", "Schema_Table": "Gene_Expression:Specimen", "Data_Type_Filter": {"and": [{"source": [{"outbound": ["Gene_Expression", "Specimen_Consortium_fkey"]}, "RID"], "choices": ["Q-3K56"]}, {"source": [{"outbound": ["Gene_Expression", "Specimen_Curation_Status_fkey"]}, "RID"], "choices": ["Q-Y61M"]}, {"source": [{"outbound": ["Gene_Expression", "Specimen_Assay_Type_fkey"]}, "RID"], "choices": ["16-2DGA"]}]}},
+    {"ID": "G-06", "Consortium": "GUDMAP", "Data_Type": "Collection", "#_Records": "33", "#_Released": "20", "#_Created_in_Latest_Year": "7", "#_Released_in_Latest_Year": "4", "Latest_Year_Start_Date": "2020-01-01", "Last_Updated": "2020-10-06", "Schema_Table": "Common:Collection", "Data_Type_Filter": {"and": [{"source": [{"outbound": ["Common", "Collection_Consortium_fkey"]}, "RID"], "choices": ["Q-3K56"]}, {"source": [{"outbound": ["Common", "Collection_Curation_Status_fkey"]}, "RID"], "choices": ["Q-Y61M"]}]}},
+    {"ID": "G-05", "Consortium": "GUDMAP", "Data_Type": "Transgenic Mouse Strain", "#_Records": "42", "#_Released": "41", "#_Created_in_Latest_Year": "0", "#_Released_in_Latest_Year": "0", "Latest_Year_Start_Date": "2020-01-01", "Last_Updated": "2019-10-21", "Schema_Table": "Cell_Line:Mouse_Strain", "Data_Type_Filter": {"and": [{"source": [{"outbound": ["Cell_Line", "Mouse_Strain_Consortium_fkey"]}, "RID"], "choices": ["Q-3K56"]}, {"source": [{"outbound": ["Cell_Line", "Mouse_Strain_Curation_Status_fkey"]}, "RID"], "choices": ["Q-Y61M"]}]}},
+    {"ID": "G-02", "Consortium": "GUDMAP", "Data_Type": "Antibody Test", "#_Records": "82", "#_Released": "60", "#_Created_in_Latest_Year": "13", "#_Released_in_Latest_Year": "12", "Latest_Year_Start_Date": "2020-01-01", "Last_Updated": "2020-09-24", "Schema_Table": "Antibody:Antibody_Tests", "Data_Type_Filter": {"and": [{"source": [{"outbound": ["Antibody", "Antibody_Tests_Consortium_fkey"]}, "RID"], "choices": ["Q-3K56"]}, {"source": [{"outbound": ["Antibody", "Antibody_Tests_Curation_Status_fkey"]}, "RID"], "choices": ["Q-Y61M"]}]}}
+]

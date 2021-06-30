@@ -1,0 +1,164 @@
+{
+    "schema_name": "text-columns",
+    "tables": {
+        "main": {
+            "kind": "table",
+            "table_name": "main",
+            "schema_name": "text-columns",
+            "comment": "main table for create with 22 text columns",
+            "keys": [
+                {
+                    "unique_columns": ["id"],
+                    "names": [["text-columns", "id_key"]]
+                }
+            ],
+            "foreign_keys": [],
+            "column_definitions": [
+                {
+                    "name": "id",
+                    "nullok": false,
+                    "type": {
+                        "typename": "serial4"
+                    }
+                },
+                {
+                    "name": "col1",
+                    "type": {
+                        "typename": "text"
+                    }
+                },
+                {
+                    "name": "col2",
+                    "type": {
+                        "typename": "text"
+                    }
+                },
+                {
+                    "name": "col3",
+                    "type": {
+                        "typename": "text"
+                    }
+                },
+                {
+                    "name": "col4",
+                    "type": {
+                        "typename": "text"
+                    }
+                },
+                {
+                    "name": "col5",
+                    "type": {
+                        "typename": "text"
+                    }
+                },
+                {
+                    "name": "col6",
+                    "type": {
+                        "typename": "text"
+                    }
+                },
+                {
+                    "name": "col7",
+                    "type": {
+                        "typename": "text"
+                    }
+                },
+                {
+                    "name": "col8",
+                    "type": {
+                        "typename": "text"
+                    }
+                },
+                {
+                    "name": "col9",
+                    "type": {
+                        "typename": "text"
+                    }
+                },
+                {
+                    "name": "col10",
+                    "type": {
+                        "typename": "text"
+                    }
+                },
+                {
+                    "name": "col11",
+                    "type": {
+                        "typename": "text"
+                    }
+                },
+                {
+                    "name": "col12",
+                    "type": {
+                        "typename": "text"
+                    }
+                },
+                {
+                    "name": "col13",
+                    "type": {
+                        "typename": "text"
+                    }
+                },
+                {
+                    "name": "col14",
+                    "type": {
+                        "typename": "text"
+                    }
+                },
+                {
+                    "name": "col15",
+                    "type": {
+                        "typename": "text"
+                    }
+                },
+                {
+                    "name": "col16",
+                    "type": {
+                        "typename": "text"
+                    }
+                },
+                {
+                    "name": "col17",
+                    "type": {
+                        "typename": "text"
+                    }
+                },
+                {
+                    "name": "col18",
+                    "type": {
+                        "typename": "text"
+                    }
+                },
+                {
+                    "name": "col19",
+                    "type": {
+                        "typename": "text"
+                    }
+                },
+                {
+                    "name": "col20",
+                    "type": {
+                        "typename": "text"
+                    }
+                },
+                {
+                    "name": "col21",
+                    "type": {
+                        "typename": "text"
+                    }
+                },
+                {
+                    "name": "col22",
+                    "type": {
+                        "typename": "text"
+                    }
+                }
+            ],
+            "annotations": {
+                "tag:isrd.isi.edu,2016:visible-columns": {
+                    "*": ["col1", "col2", "col3", "col4", "col5", "col6", "col7", "col8", "col9", "col10", "col11", "col12", "col13", "col14", "col15", "col16", "col17", "col18", "col19", "col20", "col21", "col22"]
+                }
+            }
+        }
+    }
+}

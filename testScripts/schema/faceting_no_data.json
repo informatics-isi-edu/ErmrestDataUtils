@@ -86,8 +86,15 @@
                     }
                 },
                 {
+                    "name": "boolean_required_col",
+                    "default": true,
+                    "nullok": false,
+                    "type": {
+                        "typename": "boolean"
+                    }
+                },
+                {
                     "name": "int_col",
-                    "default": 7,
                     "type": {
                         "typename": "int4"
                     }
@@ -126,7 +133,7 @@
             "annotations": {
                 "tag:isrd.isi.edu,2016:visible-columns" : {
                     "compact": ["id", "int_col", "float_col", "timestamp_col", "text_col", ["faceting", "main_fk1"], ["faceting", "main_fk2"]],
-                    "entry": ["id", "int_col", "float_col", "boolean_col", "date_col", "timestamp_col", "text_col", "markdown_col"],
+                    "entry": ["id", "int_col", "float_col", "boolean_col", "boolean_required_col", "date_col", "timestamp_col", "text_col", "markdown_col"],
                     "filter": {
                         "and": [
                             {"source": "id", "ux_mode": "choices"},
@@ -206,67 +213,6 @@
                 }
             }
         },
-        "main_f3_assoc": {
-            "kind": "table",
-            "table_name": "main_f3_assoc",
-            "schema_name": "faceting",
-            "comment": "association table between main and f3",
-            "keys": [
-                {"unique_columns": ["id_main", "id_f3"]}
-            ],
-            "foreign_keys": [
-                {
-                    "names": [["faceting", "main_f3_assoc_fk1"]],
-                    "foreign_key_columns": [
-                        {
-                            "column_name": "id_main",
-                            "table_name": "main_f3_assoc",
-                            "schema_name": "faceting"
-                        }
-                    ],
-                    "referenced_columns": [
-                        {
-                            "column_name": "id",
-                            "table_name": "main",
-                            "schema_name": "faceting"
-                        }
-                    ]
-                },
-                {
-                    "names": [["faceting", "main_f3_assoc_fk2"]],
-                    "foreign_key_columns": [
-                        {
-                            "column_name": "id_f3",
-                            "table_name": "main_f3_assoc",
-                            "schema_name": "faceting"
-                        }
-                    ],
-                    "referenced_columns": [
-                        {
-                            "column_name": "id",
-                            "table_name": "f3",
-                            "schema_name": "faceting"
-                        }
-                    ]
-                }
-            ],
-            "column_definitions": [
-                {
-                    "name": "id_main",
-                    "nullok": false,
-                    "type": {
-                        "typename": "serial4"
-                    }
-                },
-                {
-                    "name": "id_f3",
-                    "nullok": false,
-                    "type": {
-                        "typename": "serial4"
-                    }
-                }
-            ]
-        },
         "f3": {
             "kind": "table",
             "table_name": "f3",
@@ -300,30 +246,6 @@
             "keys": [
                 {"unique_columns": ["id"]},
                 {"unique_columns": ["term"]}
-            ],
-            "foreign_keys": [
-                {
-                    "names": [["faceting", "f4_fk1"]],
-                    "foreign_key_columns": [
-                        {
-                            "column_name": "id",
-                            "table_name": "f4",
-                            "schema_name": "faceting"
-                        }
-                    ],
-                    "referenced_columns": [
-                        {
-                            "column_name": "id",
-                            "table_name": "main",
-                            "schema_name": "faceting"
-                        }
-                    ],
-                    "annotations": {
-                        "tag:isrd.isi.edu,2016:foreign-key": {
-                            "from_name": "from_name"
-                        }
-                    }
-                }
             ],
             "column_definitions": [
                 {

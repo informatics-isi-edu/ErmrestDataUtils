@@ -1,0 +1,212 @@
+{
+    "schema_name": "dashboard_release_status",
+    "tables": {
+        "release_status": {
+            "schema_name": "dashboard_release_status",
+            "table_name": "release_status",
+            "rights": {
+                "owner": false,
+                "delete": false,
+                "update": false,
+                "select": true,
+                "insert": false
+            },
+            "column_definitions": [
+                {
+                    "name": "ID",
+                    "rights": {
+                        "update": false,
+                        "delete": false,
+                        "select": true,
+                        "insert": false
+                    },
+                    "type": {
+                        "typename": "text"
+                    },
+                    "default": null,
+                    "nullok": false,
+                    "comment": null,
+                    "annotations": {}
+                },
+                {
+                    "name": "Consortium",
+                    "rights": {
+                        "update": false,
+                        "delete": false,
+                        "select": true,
+                        "insert": false
+                    },
+                    "type": {
+                        "typename": "text"
+                    },
+                    "default": null,
+                    "nullok": false,
+                    "comment": null,
+                    "annotations": {}
+                },
+                {
+                    "name": "Data_Type",
+                    "rights": {
+                        "update": false,
+                        "delete": false,
+                        "select": true,
+                        "insert": false
+                    },
+                    "type": {
+                        "typename": "text"
+                    },
+                    "default": null,
+                    "nullok": false,
+                    "comment": null,
+                    "annotations": {}
+                },
+                {
+                    "name": "#_Records",
+                    "rights": {
+                        "update": false,
+                        "delete": false,
+                        "select": true,
+                        "insert": false
+                    },
+                    "type": {
+                        "typename": "text"
+                    },
+                    "default": null,
+                    "nullok": false,
+                    "comment": null,
+                    "annotations": {}
+                },
+                {
+                    "name": "#_Released",
+                    "rights": {
+                        "update": false,
+                        "delete": false,
+                        "select": true,
+                        "insert": false
+                    },
+                    "type": {
+                        "typename": "text"
+                    },
+                    "default": null,
+                    "nullok": false,
+                    "comment": null,
+                    "annotations": {}
+                },
+                {
+                    "name": "#_Created_in_Latest_Year",
+                    "rights": {
+                        "update": false,
+                        "delete": false,
+                        "select": true,
+                        "insert": false
+                    },
+                    "type": {
+                        "typename": "text"
+                    },
+                    "default": null,
+                    "nullok": false,
+                    "comment": null,
+                    "annotations": {}
+                },
+                {
+                    "name": "#_Released_in_Latest_Year",
+                    "rights": {
+                        "update": false,
+                        "delete": false,
+                        "select": true,
+                        "insert": false
+                    },
+                    "type": {
+                        "typename": "text"
+                    },
+                    "default": null,
+                    "nullok": false,
+                    "comment": null,
+                    "annotations": {}
+                },
+                {
+                    "name": "Latest_Year_Start_Date",
+                    "rights": {
+                        "update": false,
+                        "delete": false,
+                        "select": true,
+                        "insert": false
+                    },
+                    "type": {
+                        "typename": "date"
+                    },
+                    "default": null,
+                    "nullok": true,
+                    "comment": null,
+                    "annotations": {}
+                },
+                {
+                    "name": "Last_Updated",
+                    "rights": {
+                        "update": false,
+                        "delete": false,
+                        "select": true,
+                        "insert": false
+                    },
+                    "type": {
+                        "typename": "text"
+                    },
+                    "default": null,
+                    "nullok": false,
+                    "comment": null,
+                    "annotations": {}
+                },
+                {
+                    "name": "Schema_Table",
+                    "rights": {
+                        "update": false,
+                        "delete": false,
+                        "select": true,
+                        "insert": false
+                    },
+                    "type": {
+                        "typename": "text"
+                    },
+                    "default": null,
+                    "nullok": true,
+                    "comment": null,
+                    "annotations": {}
+                },
+                {
+                    "name": "Data_Type_Filter",
+                    "rights": {
+                        "update": false,
+                        "delete": false,
+                        "select": true,
+                        "insert": false
+                    },
+                    "type": {
+                        "typename": "jsonb"
+                    },
+                    "default": null,
+                    "nullok": true,
+                    "comment": null,
+                    "annotations": {}
+                }
+            ],
+            "keys": [
+                {
+                    "comment": null,
+                    "annotations": {},
+                    "unique_columns": [
+                        "ID"
+                    ],
+                    "names": [
+                        [
+                            "",
+                            "Release_Status_ID_key"
+                        ]
+                    ]
+                }
+            ],
+            "foreign_keys": [],
+            "comment": null,
+            "annotations": {}
+        }
+    }
+}
