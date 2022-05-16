@@ -518,17 +518,17 @@ var createTables = function(schema) {
 			tables[k] = table;
 			tableNames.push(k);
 
-      // gather the table documents for creation
-			if (config.tables.createNew == true && (!schema.content.tables[k].exists || (config.tables.newTables.indexOf(k) != -1))) {
-        if (!table.catalog.id || !table.schema.name || !table.name) {
-          return defer.reject("No catalog or schema set : create table function"), defer.promise;
+            // gather the table documents for creation
+            if (config.tables.createNew == true && (!schema.content.tables[k].exists || (config.tables.newTables.indexOf(k) != -1))) {
+                if (!table.catalog.id || !table.schema.name || !table.name) {
+                    return defer.reject("No catalog or schema set : create table function"), defer.promise;
+                }
+                tableDocs.push(table.content);
+            }
         }
-        tableDocs.push(table.content);
-      }
-		}
 
-    var url = schema.url + '/catalog/' + schema.catalog.id + "/schema/";
-    http.post(url, tableDocs).then(function () {
+        var url = schema.url + '/catalog/' + schema.catalog.id + "/schema/";
+        http.post(url, tableDocs).then(function () {
 			console.log("Tables created for schema " + schema.name);
 			schema.tables = tables;
 			// Import data for following tables in order for managing foreign key management
