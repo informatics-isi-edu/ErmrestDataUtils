@@ -118,12 +118,12 @@ exports.setup = function(options) {
 
 	http.get(config.url.replace('ermrest', 'authn') + "/session").then(function(response) {
    		console.log("Valid session found");
-		return createCatalog(catalog);
+		return exports.createOrModifyCatalog(catalog, config.catalog.annotations, config.catalog.acls);
 	}, function(err) {
 		console.log("In error with no cookie:" + ((!config.authCookie) ? true : false));
 		console.log(err ? (err.message + "\n" + err.stack) : "Cannot find session");
 		if (!config.authCookie) {
-			return createCatalog(catalog);
+			return createOrModifyCatalog(catalog, config.catalog.annotations, config.catalog.acls);
 		} else {
 			return defer.reject(err || {});
 		}
@@ -428,18 +428,42 @@ var removeTables = function(defer, catalogId, schemaName) {
 /**
  * @desc
  * Creates a new catalog if catalog id is not specified.
+ * This can also be used to modify annotations or ACLs of a catalog
  * @returns {Promise}
- * @param {catalog}
+ * @param {Catalog} catalog either a Catalog object or an object with {id, url}
+ * @param {Object=} annotations (optional) the annnotation object that should be added to catalog
+ * @param {Object=} acls (optional) the acls object that should be added to catalog
  */
-var createCatalog = function(catalog) {
+exports.createOrModifyCatalog = function(catalog, annotations, acls, authCookie) {
     var defer = Q.defer();
     var isNew = true;
-    var annotations = config.catalog.annotations;
-    var acls = config.catalog.acls;
+
+    const noAnnotations = typeof annotations != 'object' || annotations == null;
+    const noAcls = typeof acls != 'object' || !acls;
 
     if (!catalog) {
-        defer.resolve();
-    } else if (catalog.id && !config.catalog.acls && !config.catalog.annotations) {
+        return defer.resolve(), defer.promise;
+    }
+
+    // set the cookie for all the http requests.
+    if (authCookie) {
+        http.setDefaults({
+            headers: { 'Cookie': authCookie || "a=b;" },
+            json: true,
+            _retriable_error_codes : [0,500,503]
+        });
+    }
+  
+    // create the catalog object if needed
+    if (!(catalog instanceof Catalog)) {
+        if (typeof catalog === 'object' && catalog.id && catalog.url) {
+           catalog = new Catalog({ id: catalog.id, url: catalog.url });
+        } else {
+           return defer.reject(new Error('id and url are needed for catalog retrieval')), defer.promise;
+        }
+    }
+
+    if (catalog.id && noAnnotations && noAcls) {
         console.log("Catalog with id " + catalog.id + " already exists.");
         defer.resolve();
     } else {
@@ -449,15 +473,25 @@ var createCatalog = function(catalog) {
             if (isNew) console.log("Catalog created with id " + catalog.id);
             else console.log("Catalog with id " + catalog.id + " already exists.");
 
+            if (noAnnotations) {
+              return false;
+            }
             console.log("Creating catalog annotations...");
             return catalog.addAnnotations(annotations);
         }).then(function (message) {
-            console.log(message || "Annotations added");
+            if (message !== false) {
+                console.log(message || "Annotations added");
+            }
 
+            if (noAcls) {
+              return false;
+            }
             console.log("Updating catalog ACLs...");
             return catalog.addACLs(acls);
         }).then(function(message) {
-            console.log(message || "ACLS added: " + JSON.stringify(acls));
+            if (message !== false) {
+                console.log(message || "ACLS added: " + JSON.stringify(acls));
+            }
 
             defer.resolve();
         }, function(err) {
@@ -730,7 +764,7 @@ exports.createSchemasAndEntities = function (settings) {
   http.get(config.url.replace('ermrest', 'authn') + "/session").then(function(response) {
     console.log("Valid session found.");
     // create catalog or use the existing
-    return createCatalog(catalog);
+    return exports.createOrModifyCatalog(catalog, config.catalog.annotations, config.catalog.acls);
   }).then(function () {
     // append all schemas together and send a request to create them
     return createSchemas(catalog);
