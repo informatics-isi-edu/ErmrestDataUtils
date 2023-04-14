@@ -74,7 +74,7 @@ var configuration = {
   authCookie: "webauthn cookie" //required
 };
 
-var ermrestUtils = require('ermrest-data-utils');
+var ermrestUtils = require('@isrd-isi-edu/ermrest-data-utils');
 ermrestUtils.createSchemasAndEntities(configuration).then(function(data) {
 	console.log("Data imported with catalogId " + data.catalogId);
 }, function(err) {
@@ -89,7 +89,7 @@ ermrestUtils.createSchemasAndEntities(configuration).then(function(data) {
 To import ACLs explicitly you can call the `importACLs` method and pass a configuration object. This would allow you to pass both static and dynamic ACLs. The following is an example of using this API:
 
 ```js
-var dataUtils = require('ErmrestDataUtils');
+var dataUtils = require('@isrd-isi-edu/ermrest-data-utils');
 
 var config = {
 	url: "https://dev.isrd.isi.edu/ermrest",  //Ermrest API url
@@ -175,7 +175,7 @@ You can skip acls on catalog level or schema level or table level. The acls obje
 To delete the stuff created by the testcases, you should call `tear` with the same configuration that you provided for import. This will delete only that data which was created by the import function and leave other stuff intact. To allow delete, you need to set cleanup as true in your configuration as mentioned above.
 
 ```javascript
-var ermrestUtils = require('ermrest-data-utils');
+var ermrestUtils = require('@isrd-isi-edu/ermrest-data-utils');
 ermrestUtils.tear(configuration).then(function(data) {
 	console.log("Data cleanedup");
 }, function(err) {
@@ -190,7 +190,7 @@ ermrestUtils.tear(configuration).then(function(data) {
 To export an existing catalog and its default schema you can use the `download` function. It will download the schema information and entities and save it in the folder that you provide.
 
 ```javascript
-var ermrestUtils = require('ermrest-data-utils');
+var ermrestUtils = require('@isrd-isi-edu/ermrest-data-utils');
 ermrestUtils.download({
 	catalogId: 1,          // Mandatory
 	url: "https://dev.isrd.isi.edu/ermrest", // Ermrest API Url from where you want to download data

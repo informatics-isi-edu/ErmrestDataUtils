@@ -1,6 +1,5 @@
-var chance =  new (require('chance'))();
 var Q = require('q');
-var http = require('request-q');
+var http = require('axios');
 var utils = require('./utils.js');
 
 
@@ -17,7 +16,7 @@ var Schema = function(options) {
 	this.content = options.schema || {};
 	this.entityCount = this.content.entityCount || 0;
 	this.catalog = options.catalog || {};
-	this.name = this.content.schema_name || this.content.name || chance.string().replace(/[^a-zA-Z ]/g, "");
+	this.name = this.content.schema_name || this.content.name;
 };
 
 /**
@@ -132,13 +131,13 @@ Schema.prototype.setDefaultTable = function() {
 	for (var k in tables) {
 		table = tables[k];
 		var exclude = table['annotations'] != null && table['annotations']['comment'] != null &&
-			(table['annotations']['comment'].contains('exclude') || table['annotations']['comment'].contains('association'));
+			(table['annotations']['comment'].includes('exclude') || table['annotations']['comment'].includes('association'));
 		var nested = table['annotations'] != null && table['annotations']['comment'] != null &&
-			table['annotations']['comment'].contains('nested');
+			table['annotations']['comment'].includes('nested');
 
 		if (!exclude && !nested) {
 			rootTables.push(table['table_name']);
-			if (table['annotations'] != null && table['annotations']['comment'] != null && table['annotations']['comment'].contains('default')) {
+			if (table['annotations'] != null && table['annotations']['comment'] != null && table['annotations']['comment'].includes('default')) {
 				defaultTable = table;
 			}
 		}

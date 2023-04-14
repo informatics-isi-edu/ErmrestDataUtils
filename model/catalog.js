@@ -1,5 +1,5 @@
 var Q = require('q');
-var http = require('request-q');
+var http = require('axios');
 var utils = require('./utils.js');
 var Schema = require('./schema.js');
 
@@ -145,7 +145,7 @@ Catalog.prototype.setSchemas = function() {
 		var schema = new Schema({ schema: schemas[k], catalog: this, name: schemas[k].schema_name });
 		var annotations = schemas[k].annotations;
 
-		if (!defaultSchema && annotations != null && annotations['comment'] != null && annotations['comment'].contains('default')) {
+		if (!defaultSchema && annotations != null && annotations['comment'] != null && annotations['comment'].includes('default')) {
 			defaultSchema = schema
 		}
 
@@ -159,7 +159,7 @@ Catalog.prototype.setSchemas = function() {
 			var s = schemas[k];
 			for (var t in s.tables) {
 				var table = s.tables[t];
-				if (table['annotations'] != null && table['annotations']['comment'] != null && table['annotations']['comment'].contains('default')) {
+				if (table['annotations'] != null && table['annotations']['comment'] != null && table['annotations']['comment'].includes('default')) {
 					defaultSchema = this.schemas[k];
 					break;
 				}

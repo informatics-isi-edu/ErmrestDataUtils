@@ -1,5 +1,5 @@
 var Q = require('q');
-var http = require('request-q');
+var http = require('axios');
 var utils = require('./utils.js');
 
 /* @namespace Column

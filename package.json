@@ -1,16 +1,19 @@
 {
-  "name": "ermrest-data-utils",
-  "description": "Allows you to import and export data for testing chaise UI. ",
-  "version": "0.2.1",
-  "engines": [
-    "node >= 0.8.16"
-  ],
+  "name": "@isrd-isi-edu/ermrest-data-utils",
+  "description": "Allows you to import and export data using ERMrest",
+  "version": "0.0.2",
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  },
   "main": "import.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/informatics-isi-edu/ErmrestDataUtils.git"
+  },
   "scripts": {},
   "dependencies": {
-    "q": "x",
-    "request": "x",
-    "chance": "x",
-    "request-q": "x"
+    "q": "^1.5.1",
+    "axios": "^0.24.0"
   }
 }

@@ -18,7 +18,7 @@ var Association = function(options) {
 	this.hasAReference = function(table, ignoreTables) {
 		var has = false;
 		for (var k in back_references) {
-			if (!ignoreTables.contains(k) && back_references[k].contains(table)) {
+			if (!ignoreTables.includes(k) && back_references[k].includes(table)) {
 				has = true;
 				break;
 			}
@@ -34,23 +34,23 @@ var Association = function(options) {
 		}
 
 		var rootTables = [];
-		
+
 		SCHEMA_METADATA.forEach(function(table) {
 			var exclude = table['annotations'] != null && table['annotations'][TABLES_LIST_URI] != null &&
-				(table['annotations'][TABLES_LIST_URI].contains('exclude') || table['annotations'][TABLES_LIST_URI].contains('association'));
+				(table['annotations'][TABLES_LIST_URI].includes('exclude') || table['annotations'][TABLES_LIST_URI].includes('association'));
 			var nested = table['annotations'] != null && table['annotations'][TABLES_LIST_URI] != null &&
-				table['annotations'][TABLES_LIST_URI].contains('nested');
-			
+				table['annotations'][TABLES_LIST_URI].includes('nested');
+
 			if (!exclude && !nested) {
 				rootTables.push(table['table_name']);
 				var isDefault = table['annotations'] != null && table['annotations'][TABLES_LIST_URI] != null &&
-					table['annotations'][TABLES_LIST_URI].contains('default');
+					table['annotations'][TABLES_LIST_URI].includes('default');
 				if (isDefault) {
 					DEFAULT_TABLE = table['table_name'];
 				}
 			}
 			if (table['annotations'] != null && table['annotations'][TABLES_LIST_URI] != null &&
-				table['annotations'][TABLES_LIST_URI].contains('association')) {
+				table['annotations'][TABLES_LIST_URI].includes('association')) {
 				schema_association_tables_names.push(table['table_name']);
 			}
 		});
@@ -70,9 +70,9 @@ var Association = function(options) {
 		var schema_back_references = {};
 		var tables = [];
 		SCHEMA_METADATA.forEach(function(table) {
-			var isNested = table['annotations'] != null && table['annotations'][TABLES_LIST_URI] != null && table['annotations'][TABLES_LIST_URI].contains('nested');
+			var isNested = table['annotations'] != null && table['annotations'][TABLES_LIST_URI] != null && table['annotations'][TABLES_LIST_URI].includes('nested');
 			var exclude = table['annotations'] != null && table['annotations'][TABLES_LIST_URI] != null &&
-				(table['annotations'][TABLES_LIST_URI].contains('association'));
+				(table['annotations'][TABLES_LIST_URI].includes('association'));
 			if (isNested || !exclude) {
 				tables.push(table['table_name']);
 			}
@@ -81,7 +81,7 @@ var Association = function(options) {
 		SCHEMA_METADATA.forEach(function(table) {
 			table['foreign_keys'].forEach(function(fk) {
 				fk['referenced_columns'].forEach(function(ref_column) {
-					if (tables.contains(ref_column['table_name'])) {
+					if (tables.includes(ref_column['table_name'])) {
 						if (schema_back_references[ref_column['table_name']] == null) {
 							schema_back_references[ref_column['table_name']] = [];
 						}
@@ -98,7 +98,7 @@ var Association = function(options) {
 		association_tables_names = [];
 		if (back_references != null && back_references[table] != null) {
 			schema_association_tables_names.forEach(function(name) {
-				if (back_references[table].contains(name)) {
+				if (back_references[table].includes(name)) {
 					association_tables_names.push(name);
 				}
 			});
@@ -106,7 +106,7 @@ var Association = function(options) {
 		var vocabularies = getAssociationTablesNames(table);
 		if (vocabularies != null) {
 			vocabularies.forEach(function(name) {
-				if (!association_tables_names.contains(name)) {
+				if (!association_tables_names.includes(name)) {
 					association_tables_names.push(name);
 				}
 			});
@@ -135,7 +135,7 @@ var Association = function(options) {
 		referenceTables.forEach(function(referenceTable) {
 			SCHEMA_METADATA.forEach(function(metadata) {
 				if (metadata['table_name'] == referenceTable) {
-					if (metadata['annotations'] != null && metadata['annotations'][TABLES_LIST_URI] != null && metadata['annotations'][TABLES_LIST_URI].contains('association')) {
+					if (metadata['annotations'] != null && metadata['annotations'][TABLES_LIST_URI] != null && metadata['annotations'][TABLES_LIST_URI].includes('association')) {
 						ret.push(metadata['table_name']);
 					}
 				}
@@ -161,7 +161,7 @@ var Association = function(options) {
 		association_tables = {};
 		var index = 0;
 		SCHEMA_METADATA.forEach(function(table) {
-			if (association_tables_names.contains(table['table_name'])) {
+			if (association_tables_names.includes(table['table_name'])) {
 				var fk_columns = [];
 				table['foreign_keys'].forEach(function(foreign_keys) {
 					var k = 0;
@@ -175,12 +175,12 @@ var Association = function(options) {
 				if (fk_columns.length > 0) {
 					var columns = [];
 					table['column_definitions'].forEach(function(column_definition) {
-						if (!fk_columns.contains(column_definition['name'])) {
+						if (!fk_columns.includes(column_definition['name'])) {
 							var display = getColumnDisplayName(column_definition['name']);
 							if (column_definition['annotations'] != null && column_definition['annotations'][COLUMNS_MAP_URI] != null && column_definition['annotations'][COLUMNS_MAP_URI]['display'] != null) {
 								display = column_definition['annotations'][COLUMNS_MAP_URI]['display'];
 							}
-							if (column_definition['annotations'] == null || column_definition['annotations'][COLUMNS_LIST_URI] == null || !column_definition['annotations'][COLUMNS_LIST_URI].contains('hidden')) {
+							if (column_definition['annotations'] == null || column_definition['annotations'][COLUMNS_LIST_URI] == null || !column_definition['annotations'][COLUMNS_LIST_URI].includes('hidden')) {
 								columns.push({'name': column_definition['name'],
 									'display': display});
 							}
@@ -201,11 +201,11 @@ var Association = function(options) {
 
 	function setVocabularyTables(index) {
 		SCHEMA_METADATA.forEach(function(i, table) {
-			if (association_tables[table['table_name']] == null && association_tables_names.contains(table['table_name'])) {
+			if (association_tables[table['table_name']] == null && association_tables_names.includes(table['table_name'])) {
 				var columns = [];
 				table['column_definitions'].forEach(function(column_definition) {
-					// if (column_definition['annotations'] != null && column_definition['annotations'][COLUMNS_LIST_URI] != null && !column_definition['annotations'][COLUMNS_LIST_URI].contains('hidden')) {
-					if (column_definition['annotations'][COLUMNS_LIST_URI] == null || !column_definition['annotations'][COLUMNS_LIST_URI].contains('hidden')) {
+					// if (column_definition['annotations'] != null && column_definition['annotations'][COLUMNS_LIST_URI] != null && !column_definition['annotations'][COLUMNS_LIST_URI].includes('hidden')) {
+					if (column_definition['annotations'][COLUMNS_LIST_URI] == null || !column_definition['annotations'][COLUMNS_LIST_URI].includes('hidden')) {
 						var display = getColumnDisplayName(column_definition['name']);
 						if (column_definition['annotations'] != null && column_definition['annotations'][COLUMNS_MAP_URI] != null && column_definition['annotations'][COLUMNS_MAP_URI]['display'] != null) {
 							display = column_definition['annotations'][COLUMNS_MAP_URI]['display'];

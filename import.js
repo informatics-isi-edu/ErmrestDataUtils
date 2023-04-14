@@ -1,9 +1,9 @@
 
-exports.http = require('request-q');
+exports.http = require('axios');
 
-delete require.cache['request-q'];
+delete require.cache['axios'];
 
-var http = require('request-q');
+var http = require('axios');
 var Catalog = require('./model/catalog.js');
 var Schema = require('./model/schema.js');
 var Table = require('./model/table.js');
@@ -33,11 +33,9 @@ exports.introspect = function(options) {
 	config.url = config.url || 'https://dev.isrd.isi.edu/ermrest';
 	config.authCookie = config.authCookie;
 
-	http.setDefaults({
-	    headers: { 'Cookie': config.authCookie || "a=b;" },
-	    json: true,
-	    _retriable_error_codes : [0,500,503]
-	});
+  // set the cookie for all the requests
+  http.defaults.withCredentials = true;
+  http.defaults.headers.common.Cookie = config.authCookie || '';
 
 	var catalog = new Catalog({
 		url: config.url,
@@ -89,11 +87,9 @@ exports.setup = function(options) {
 	config.url = config.url || 'https://dev.isrd.isi.edu/ermrest';
 	config.authCookie = config.authCookie;
 
-	http.setDefaults({
-	    headers: { 'Cookie': config.authCookie || "a=b;" },
-	    json: true,
-	    _retriable_error_codes : [0,500,503]
-	});
+  // set the cookie for all the requests
+  http.defaults.withCredentials = true;
+  http.defaults.headers.common.Cookie = config.authCookie || '';
 
 	var schema, catalog;
 
@@ -157,11 +153,9 @@ exports.importData = function(options) {
 };
 
 exports.importACLS = function(options) {
-	http.setDefaults({
-	    headers: { 'Cookie': options.authCookie || "a=b;" },
-	    json: true,
-	    _retriable_error_codes : [0,500,503]
-	});
+  // set the cookie for all the requests
+  http.defaults.withCredentials = true;
+  http.defaults.headers.common.Cookie = options.authCookie || '';
 
 	var config = options.setup, url = options.url;
 
@@ -292,11 +286,9 @@ exports.tear = function(options) {
 
 	var defer = Q.defer();
 
-	http.setDefaults({
-	    headers: { 'Cookie': config.authCookie || "a=b;" },
-	    json: true,
-	    _retriable_error_codes : [0,500,503]
-	});
+  // set the cookie for all the requests
+  http.defaults.withCredentials = true;
+  http.defaults.headers.common.Cookie = config.authCookie || '';
 
 	if (!config.setup.catalog) {
 		defer.resolve();
@@ -447,13 +439,11 @@ exports.createOrModifyCatalog = function(catalog, annotations, acls, authCookie)
 
     // set the cookie for all the http requests.
     if (authCookie) {
-        http.setDefaults({
-            headers: { 'Cookie': authCookie || "a=b;" },
-            json: true,
-            _retriable_error_codes : [0,500,503]
-        });
+      // set the cookie for all the requests
+      http.defaults.withCredentials = true;
+      http.defaults.headers.common.Cookie = authCookie || '';
     }
-  
+
     // create the catalog object if needed
     if (!(catalog instanceof Catalog)) {
         if (typeof catalog === 'object' && catalog.id && catalog.url) {
@@ -747,12 +737,9 @@ exports.createSchemasAndEntities = function (settings) {
     config.catalog = {};
   }
 
-  // set the cookie for all the http requests.
-  http.setDefaults({
-    headers: { 'Cookie': settings.authCookie || "a=b;" },
-    json: true,
-    _retriable_error_codes : [0,500,503]
-  });
+  // set the cookie for all the requests
+  http.defaults.withCredentials = true;
+  http.defaults.headers.common.Cookie = settings.authCookie || '';
 
   // if catalogId exists, we won't create a new catalog.
   var catalog = new Catalog({
