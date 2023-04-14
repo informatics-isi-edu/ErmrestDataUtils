@@ -4,7 +4,7 @@ The data import and export utility allows to create new catalog, schemas, tables
 
 ## Getting Started
 
-To work with this piece of code, `npm install` should be run to install the dependencies specified in `package.json`.
+To work with this piece of code, `npm clean-install` should be run to install the dependencies specified in `package.json`.
 
 ### Import
 
