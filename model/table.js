@@ -1,6 +1,5 @@
-var chance =  new (require('chance'))();
 var Q = require('q');
-var http = require('request-q');
+var http = require('axios');
 var utils = require('./utils.js');
 var systemColumns = require('./system_columns.js');
 

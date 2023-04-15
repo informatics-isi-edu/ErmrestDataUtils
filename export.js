@@ -1,10 +1,11 @@
 
-var request = require('request'), fs = require('fs');
+const axios = require('axios');
+const fs = require('fs');
 var dataSetupCode =  require('./import.js');
-  
+
 exports.download = function (options) {
-  
-  var ermrestURL = options.url ||  "https://dev.isrd.isi.edu/ermrest/";
+
+  var ermrestURL = options.url ||  "https://dev.isrd.isi.edu/ermrest";
   var authCookie = options.authCookie || "";
   var catalogId = options.catalogId || 1;
 
@@ -15,7 +16,7 @@ exports.download = function (options) {
     catalogId: catalogId,
     authCookie: authCookie
   }).then(function(schema) {
-    
+
     if (options.schemaName) schema = schema.catalog.schemas[options.schemaName] || schema;
 
     console.log(process.env.PWD + (options.folderName ? ( "/" + options.folderName) : "") + '/schema');
@@ -26,21 +27,29 @@ exports.download = function (options) {
       }
     }
 
-    // Write the schema to the file with schema name under schema folder 
+    // Write the schema to the file with schema name under schema folder
     fs.writeFile(process.env.PWD + (options.folderName ? ( "/" + options.folderName) : "") + "/"  + schema.name + ".json", JSON.stringify(schema.content, undefined, 2) , function(err) {
       if (err) throw err;
 
-      request = request.defaults({
-        headers: {'cookie': authCookie }
-      });
+      // set the cookie for all the requests
+      axios.defaults.withCredentials = true;
+      axios.defaults.headers.common.Cookie = authCookie || '';
 
       console.log(schema.name);
 
-      exportEntities = function(table) {
+      exportEntities = async function(table) {
         // Fetch entities for the table and save them in the file with tableName under the schemaName folder inside data folder
-        request
-          .get(ermrestURL + 'catalog/' + catalogId + '/entity/' + schema.name + ':' + table)
-          .pipe(fs.createWriteStream(process.env.PWD + (options.folderName ? ( "/" + options.folderName) : "") + '/data/' + table + '.json'));
+        try {
+          const { data } = await axios.get(
+            ermrestURL + '/catalog/' + catalogId + '/entity/' + schema.name + ':' + table,
+            { responseType: 'stream' }
+          );
+          data.pipe(fs.createWriteStream(process.env.PWD + (options.folderName ? ( "/" + options.folderName) : "") + '/data/' + table + '.json'));
+          console.log(table);
+        } catch (error) {
+          console.log(`unable to save data for table: ${table}`);
+          console.oog(error);
+        }
       };
 
       if (!fs.existsSync(process.env.PWD + (options.folderName ? ( "/" + options.folderName) : "") + '/data')) {
@@ -58,7 +67,7 @@ exports.download = function (options) {
 
     });
 
-  
+
   }, function(err) {
     throw new Error("Unable to fetch schemas");
   });
