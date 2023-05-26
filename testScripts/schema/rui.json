@@ -1,0 +1,69 @@
+{
+  "schema_name": "rui",
+  "tables": {
+    "main": {
+      "kind": "table",
+      "schema_name": "rui",
+      "table_name": "main",
+      "keys": [{"unique_columns": ["id"]}],
+      "foreign_keys": [],
+      "column_definitions": [
+        {
+          "name": "id",
+          "nullok": false,
+          "type": {"typename": "text"}
+        },
+        {
+          "name": "RUI",
+          "nullok": true,
+          "type": {"typename": "text"},
+          "annotations": {
+            "tag:isrd.isi.edu,2023:iframe-input": true,
+            "tag:isrd.isi.edu,2017:asset": {
+              "url_pattern":"/hatrac/js/chaise/rui_test/{{{_id}}}/{{{_uri.md5_hex}}}"
+            }
+          }
+        },
+        {
+          "name": "RUI_id",
+          "nullok": true,
+          "type": {"typename": "text"}
+        }
+      ],
+      "annotations": {
+        "tag:isrd.isi.edu,2016:visible-columns": {
+          "entry": ["id", "RUI"]
+        }
+      }
+    },
+    "table_w_asset": {
+      "kind": "table",
+      "schema_name": "rui",
+      "table_name": "table_w_asset",
+      "keys": [{"unique_columns": ["id"]}],
+      "foreign_keys": [],
+      "column_definitions": [
+        {
+          "name": "id",
+          "nullok": false,
+          "type": {"typename": "text"}
+        },
+        {
+          "name": "uri",
+          "nullok": true,
+          "type": {"typename": "text"},
+          "annotations": {
+            "tag:isrd.isi.edu,2017:asset": {
+              "url_pattern":"/hatrac/js/chaise/rui_asset_test/{{{_id}}}/{{{_uri.md5_hex}}}"
+            }
+          }
+        }
+      ],
+      "annotations": {
+        "tag:isrd.isi.edu,2016:visible-columns": {
+          "entry": ["id", "uri"]
+        }
+      }
+    }
+  }
+}
