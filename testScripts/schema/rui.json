@@ -20,7 +20,7 @@
           "annotations": {
             "tag:isrd.isi.edu,2023:iframe-input": true,
             "tag:isrd.isi.edu,2017:asset": {
-              "url_pattern":"/hatrac/js/chaise/rui_test/{{{_id}}}/{{{_uri.md5_hex}}}"
+              "url_pattern":"/hatrac/js/chaise/rui_test/{{{_id}}}/{{{_RUI.md5_hex}}}"
             }
           }
         },
