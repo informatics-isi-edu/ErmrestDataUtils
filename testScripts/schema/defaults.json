@@ -217,7 +217,18 @@
                            "typename": "int4"
                        }
                    }
-               }, {
+                }, {
+                    "name": "array_text",
+                    "default": null,
+                    "nullok": true,
+                    "type": {
+                        "is_array": true,
+                        "typename": "text[]",
+                        "base_type": {
+                            "typename": "text"
+                        }
+                    }
+                }, {
                    "name": "array_disabled",
                    "default": null,
                    "nullok": true,
@@ -400,11 +411,11 @@
                         "asset_disabled", "asset_disabled_no_default", "text", "text_disabled", "longtext", "longtext_disabled", "markdown", "markdown_disabled", ["defaults", "fk_text"], ["defaults", "fk_text_disabled"],
                         "int", "int_disabled", "float", "float_disabled", "boolean_true", "boolean_false", "boolean_disabled", "date", "date_disabled", "timestamp", "timestamp_disabled",
                          "timestamp_disabled_no_default", "timestamptz", "timestamptz_disabled", "timestamptz_disabled_no_default", "json", "json_disabled", "json_disabled_no_default",
-                         "array", "array_disabled", "asset", "color_rgb_hex", "color_rgb_hex_disabled", "RID", "RCB", "RMB", "RCT", "RMT"
+                         "array", "array_text", "array_disabled", "asset", "color_rgb_hex", "color_rgb_hex_disabled", "RID", "RCB", "RMB", "RCT", "RMT"
                     ],
                     "entry/edit": [
                         "asset_disabled", "text", "text_disabled", "longtext_disabled", "markdown_disabled", ["defaults", "fk_text_disabled"], "int_disabled", "float_disabled", "boolean_disabled", "date_disabled",
-                        "timestamp_disabled", "timestamptz_disabled", "json_disabled", "array", "array_disabled", "color_rgb_hex_disabled"
+                        "timestamp_disabled", "timestamptz_disabled", "json_disabled", "array", "array_text", "array_disabled", "color_rgb_hex_disabled"
                     ],
                     "detailed": [
                         "text", "text_disabled", "longtext", "longtext_disabled", "markdown", "markdown_disabled", ["defaults", "fk_text"], ["defaults", "fk_text_disabled"], "int", "int_disabled", "float", "float_disabled",

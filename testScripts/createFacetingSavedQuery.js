@@ -8,6 +8,10 @@ var configuration = {
                 "tag:misd.isi.edu,2015:display": {
                     "show_saved_query": true
                 }
+            },
+            "acls": {
+                "enumerate": ["*"],
+                "select": ["*"]
             }
         },
         "schema": {
@@ -49,7 +53,7 @@ dataUtils.importData(configuration).then(function(data) {
 
     // return Catalog.addACLs(data.schema.url, data.catalogId, acls);
     // Anyone can read ACL
-    return Catalog.addACLs(data.schema.url, data.catalogId, {"select": ["*"]});
+    return Catalog.addACLs(data.schema.url, data.catalogId, {"enumerate": ["*"], "select": ["*"]});
 }, function(err) {
     console.log("Unable to import data");
     console.dir(err);

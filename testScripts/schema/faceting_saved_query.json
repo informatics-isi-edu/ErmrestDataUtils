@@ -967,7 +967,6 @@
             "kind": "table",
             "comment": "A CFDE portal query saved by a user.",
             "annotations": {
-                "tag:isrd.isi.edu,2016:generated": true,
                 "tag:isrd.isi.edu,2016:non-deletable": true,
                 "tag:isrd.isi.edu,2016:immutable": false,
                 "tag:misd.isi.edu,2015:display": {
