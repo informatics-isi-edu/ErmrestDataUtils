@@ -775,7 +775,6 @@
                         "typename": "jsonb"
                     },
                     "default": null,
-                    "nullok": false,
                     "comment": "The CFDE/DERIVA machine-readable description of the faceted query criteria",
                     "annotations": {
                         "tag:misd.isi.edu,2015:display": {},
@@ -873,7 +872,6 @@
                         "typename": "jsonb"
                     },
                     "default": null,
-                    "nullok": false,
                     "comment": "The URL-encoded, machine-readable JSON version of faceted query criteria",
                     "annotations": {
                         "tag:misd.isi.edu,2015:display": {},
@@ -967,7 +965,6 @@
             "kind": "table",
             "comment": "A CFDE portal query saved by a user.",
             "annotations": {
-                "tag:isrd.isi.edu,2016:non-deletable": true,
                 "tag:isrd.isi.edu,2016:immutable": false,
                 "tag:misd.isi.edu,2015:display": {
                     "name": "Saved Query"
