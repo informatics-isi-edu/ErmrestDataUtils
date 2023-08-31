@@ -38,5 +38,16 @@
   {"id": "37", "name": "thirty seven"},
   {"id": "38", "name": "thirty eight"},
   {"id": "39", "name": "thirty nine"},
-  {"id": "40", "name": "forty"}
+  {"id": "40", "name": "forty"},
+  {"id": "41", "name": "forty one"},
+  {"id": "42", "name": "forty two"},
+  {"id": "43", "name": "forty three"},
+  {"id": "44", "name": "forty four"},
+  {"id": "45", "name": "forty five"},
+  {"id": "46", "name": "forty six"},
+  {"id": "47", "name": "forty seven"},
+  {"id": "48", "name": "forty eight"},
+  {"id": "49", "name": "forty nine"},
+  {"id": "50", "name": "fifty"},
+  {"id": "111", "name": "This is a really long text value to show how the dropdown behaves when there is a long value mixed with short values."}
 ]
