@@ -53,7 +53,7 @@ Table.prototype.addSystemColumsAndKeys = function() {
 
 	this.content.keys = this.content.keys || [];
 
-	var found = this.content.keys.find(k => ((k.unique_columns.legnth === 1) && (k.unique_columns.indexOf("RID") !== -1)));
+	var found = this.content.keys.find(k => ((k.unique_columns.length === 1) && (k.unique_columns.indexOf("RID") !== -1)));
 
 	if (!found) {
 		this.content.keys.push({ unique_columns: ["RID"], annotations: {} });
