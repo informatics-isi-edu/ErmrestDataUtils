@@ -3,6 +3,8 @@ exports.http = require('axios');
 
 delete require.cache['axios'];
 
+const Fs = require('fs');
+const Path = require('path')
 var http = require('axios');
 var Catalog = require('./model/catalog.js');
 var Schema = require('./model/schema.js');
@@ -618,23 +620,24 @@ var importEntities = function(tableNames, tables, schema) {
  * @param {table} A Table Object.
  */
 var insertEntitiesForATable = function(table, schemaName, entitiesPath) {
-	var defer = Q.defer();
+  return new Promise((resolve, reject) => {
+    const fullPath = Path.join(process.env.PWD, entitiesPath, `${table.name}.json`);
+    const message = `Entities of type ${table.name.toLowerCase()} created`;
 
-	var datasets = new Entites({
-		url: config.url,
-		table: table
-	});
-	datasets.create({
-		entities: require(process.env.PWD + "/" + (entitiesPath + "/" + table.name + '.json'))
-	}).then(function(entities) {
-		console.log(entities.length + " Entities of type " + table.name.toLowerCase() + " created");
-		table.entities = entities;
-		defer.resolve();
-	}, function(err) {
-		defer.reject(err);
-	});
+    if (!Fs.existsSync(fullPath)) {
+      console.log(`0 ${message} (entity file not found).`);
+      resolve();
+      return;
+    }
 
-	return defer.promise;
+    new Entites({ url: config.url, table }).create({ entities: require(fullPath) }).then((entities) => {
+      console.log(`${entities.length} ${message}.`);
+      table.entities = entities;
+      resolve();
+    }).catch((err) => {
+      reject(err);
+    });
+  });
 };
 
 /**
