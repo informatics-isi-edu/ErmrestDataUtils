@@ -13,11 +13,12 @@ const configuration = {
       }
     }
   },
-  url: 'https://dev.isrd.isi.edu/ermrest',
+  url: process.env.ERMREST_URL,
   authCookie: process.env.AUTH_COOKIE
 };
 
 const createCatalog = () => {
+  console.log(`server ${configuration.url} with cookie ${configuration.authCookie}`);
   let catalogId;
   dataUtils.createSchemasAndEntities(configuration).then(function (data) {
     catalogId = data.catalogId;
@@ -42,7 +43,7 @@ var importAcls = function (catalogId) {
           "select": ["*"],
           "write": [
             "https://auth.globus.org/9d596ac6-22b9-11e6-b519-22000aef184d" //isrd-testers
-          ], 
+          ],
         }
       }
     },

@@ -32,7 +32,7 @@ exports.introspect = function(options) {
 	var defer = Q.defer();
 
 	config = options;
-	config.url = config.url || 'https://dev.isrd.isi.edu/ermrest';
+	config.url = config.url || 'https://dev.derivacloud.org/ermrest';
 	config.authCookie = config.authCookie;
 
   // set the cookie for all the requests
@@ -86,7 +86,7 @@ exports.introspect = function(options) {
  */
 exports.setup = function(options) {
 	config = options;
-	config.url = config.url || 'https://dev.isrd.isi.edu/ermrest';
+	config.url = config.url || 'https://dev.derivacloud.org/ermrest';
 	config.authCookie = config.authCookie;
 
   // set the cookie for all the requests
@@ -283,7 +283,7 @@ exports.importACLS = function(options) {
  */
 exports.tear = function(options) {
 	config = options;
-	config.url = config.url || 'https://dev.isrd.isi.edu/ermrest';
+	config.url = config.url || 'https://dev.derivacloud.org/ermrest';
 	config.authCookie = config.setup.authCookie || config.authCookie;
 
 	var defer = Q.defer();
@@ -734,7 +734,7 @@ exports.createSchemasAndEntities = function (settings) {
   // I didn't want to make a lot of changes to the existsing code, but we might
   // want to consider removing this and passing it to functions that need it.
   config = settings.setup;
-  config.url = settings.url || 'https://dev.isrd.isi.edu/ermrest';
+  config.url = settings.url || 'https://dev.derivacloud.org/ermrest';
   // other parts of the existing code rely on this object
   if (!config.catalog) {
     config.catalog = {};

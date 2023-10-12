@@ -5,7 +5,7 @@ var dataSetupCode =  require('./import.js');
 
 exports.download = function (options) {
 
-  var ermrestURL = options.url ||  "https://dev.isrd.isi.edu/ermrest";
+  var ermrestURL = options.url ||  "https://dev.derivacloud.org/ermrest";
   var authCookie = options.authCookie || "";
   var catalogId = options.catalogId || 1;
 

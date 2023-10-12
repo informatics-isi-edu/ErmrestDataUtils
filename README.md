@@ -32,7 +32,7 @@ var configuration = {
 	    },
 
 	},
-	url: "https://dev.isrd.isi.edu/ermrest",  //Ermrest API url
+	url: "https://dev.derivacloud.org/ermrest",  //Ermrest API url
 	authCookie: "ermrest_cookie;", // Ermrest Authentication cookie to create data
 	cleanup: true
 }
@@ -92,7 +92,7 @@ To import ACLs explicitly you can call the `importACLs` method and pass a config
 var dataUtils = require('@isrd-isi-edu/ermrest-data-utils');
 
 var config = {
-	url: "https://dev.isrd.isi.edu/ermrest",  //Ermrest API url
+	url: "https://dev.derivacloud.org/ermrest",  //Ermrest API url
 	authCookie: "ermrest_cookie;", // Ermrest Authentication cookie to create data
 	"catalog": {
         "id": catalogId,
@@ -193,7 +193,7 @@ To export an existing catalog and its default schema you can use the `download` 
 var ermrestUtils = require('@isrd-isi-edu/ermrest-data-utils');
 ermrestUtils.download({
 	catalogId: 1,          // Mandatory
-	url: "https://dev.isrd.isi.edu/ermrest", // Ermrest API Url from where you want to download data
+	url: "https://dev.derivacloud.org/ermrest", // Ermrest API Url from where you want to download data
 	authCookie: "ermrest_cookie;", // Ermrest Authentication cookie to download data
 	schemaName: "legacy",   // Optional: Will download the defailt catalog if not provided
 	folderName: "export01"  // Mandatory: To specify an explicit folder name where  the schema and data will be imported

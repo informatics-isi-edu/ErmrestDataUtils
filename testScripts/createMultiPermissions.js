@@ -21,7 +21,7 @@ const configuration = {
       }
     }
   },
-  url: 'https://dev.isrd.isi.edu/ermrest',
+  url: process.env.ERMREST_URL,
   authCookie: process.env.AUTH_COOKIE
 };
 
