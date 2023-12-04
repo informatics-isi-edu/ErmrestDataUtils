@@ -535,7 +535,7 @@
             }
         },
         "saved_query": {
-            "schema_name": "CFDE",
+            "schema_name": "faceting",
             "table_name": "saved_query",
             "rights": {
                 "owner": false,
@@ -897,7 +897,7 @@
                     ],
                     "names": [
                         [
-                            "CFDE",
+                            "faceting",
                             "saved_query_user_id_schema_name_table_name_query_id_key"
                         ]
                     ]
@@ -907,14 +907,14 @@
                 {
                     "foreign_key_columns": [
                         {
-                            "schema_name": "CFDE",
+                            "schema_name": "faceting",
                             "table_name": "saved_query",
                             "column_name": "user_id"
                         }
                     ],
                     "referenced_columns": [
                         {
-                            "schema_name": "CFDE",
+                            "schema_name": "faceting",
                             "table_name": "user_profile",
                             "column_name": "id"
                         }
@@ -954,7 +954,7 @@
                     },
                     "names": [
                         [
-                            "CFDE",
+                            "faceting",
                             "saved_query_user_id_fkey"
                         ]
                     ],
@@ -1069,7 +1069,7 @@
                             "source": [
                                 {
                                     "outbound": [
-                                        "CFDE",
+                                        "faceting",
                                         "saved_query_user_id_fkey"
                                     ]
                                 },
