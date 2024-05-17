@@ -8,8 +8,9 @@ const configuration = {
       }
     },
     "schemas": {
-      "rui": {
-        "path": "schema/rui.json"
+      "example": {
+        "path": "schema/rui.json",
+        "entities": "data/example"
       }
     }
   },

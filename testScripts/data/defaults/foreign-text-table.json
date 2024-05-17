@@ -1,1 +1,4 @@
-[{"id": 2, "name": "Default for foreign_key column"}]
+[
+  {"id": 2, "name": "Default for foreign_key column"},
+  {"id": 3, "name": "A very long name that should eventually trigger the ellipsis logic"}
+]

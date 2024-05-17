@@ -626,14 +626,107 @@
                     }
                 }
             }
+        },
+        "test-table": {
+            "table_name": "test-table",
+            "schema_name": "defaults",
+            "kind": "table",
+            "keys": [{"unique_columns": ["id"]}],
+            "foreign_keys": [
+                {
+                    "names": [["defaults", "test-table-fk-1"]],
+                    "foreign_key_columns": [
+                        {
+                            "table_name": "test-table",
+                            "schema_name": "defaults",
+                            "column_name": "fk_col_1"
+                        }
+                    ],
+                    "referenced_columns": [
+                        {
+                            "table_name": "foreign-text-table",
+                            "schema_name": "defaults",
+                            "column_name": "id"
+                        }
+                    ]
+                },
+                {
+                    "names": [["defaults", "test-table-fk-2"]],
+                    "foreign_key_columns": [
+                        {
+                            "table_name": "test-table",
+                            "schema_name": "defaults",
+                            "column_name": "fk_col_2"
+                        }
+                    ],
+                    "referenced_columns": [
+                        {
+                            "table_name": "foreign-text-table",
+                            "schema_name": "defaults",
+                            "column_name": "id"
+                        }
+                    ]
+                }
+            ],
+            "column_definitions": [
+                {
+                    "name": "id",
+                    "type": {"typename": "serial4"}
+                },
+                {
+                    "name": "text_col",
+                    "type": {"typename": "text"}
+                },
+                {
+                    "name": "boolean_col",
+                    "type": {"typename": "boolean"},
+                    "annotations": {
+                        "tag:isrd.isi.edu,2016:column-display": {
+                            "*": {
+                                "pre_format": {
+                                    "format": "%t",
+                                    "bool_true_value": "A very long text that will represent true and requires ellipsis",
+                                    "bool_false_value": "A very long text that will represent false and requires ellipsis"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "fk_col_1",
+                    "type": {"typename": "int4"}
+                },
+                {
+                    "name": "fk_col_2",
+                    "type": {"typename": "int4"}
+                },
+                {
+                    "name": "asset_col",
+                    "type": {"typename": "text"},
+                    "annotations": {
+                        "tag:isrd.isi.edu,2017:asset": {
+                            "url_pattern": "/hatrac/js/chaise/{{{_timestamptz}}}/{{{_asset.md5_hex}}}"
+                        }
+                    }
+                },
+                {
+                    "name": "timestamptz",
+                    "default": "2014-05-07T14:40:00-07:00",
+                    "nullok": true,
+                    "type": {
+                        "typename": "timestamptz"
+                    }
+                }
+            ],
+            "annotations": {
+                "tag:isrd.isi.edu,2016:visible-columns": {
+                    "*": [
+                        "id", "text_col", "boolean_col", ["defaults", "test-table-fk-1"], ["defaults", "test-table-fk-2"], "asset_col", "timestamptz"
+                    ]
+                }
+            }
         }
     },
-    "table_names": [
-        "defaults-table",
-        "foreign-text-table",
-        "foreign-text-disabled-table",
-        "foreign-dropdown-table"
-    ],
     "comment": null,
     "annotations": {}
 }
