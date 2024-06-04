@@ -203,17 +203,17 @@
                     }
                 }, {
                     "name": "json",
-                    "default": "{\"name\":\"testing_json\"}",
+                    "default": null,
                     "nullok": true,
                     "type": {
-                        "typename": "json"
+                        "typename": "jsonb"
                     }
                 }, {
                     "name": "json_disabled",
                     "default": 98.786,
                     "nullok": true,
                     "type": {
-                        "typename": "json"
+                        "typename": "jsonb"
                     },
                     "annotations": {
                         "tag:isrd.isi.edu,2016:generated": null,
@@ -224,7 +224,7 @@
                    "default": null,
                    "nullok": true,
                    "type": {
-                       "typename": "json"
+                       "typename": "jsonb"
                    },
                    "annotations": {
                        "tag:isrd.isi.edu,2016:generated": null,

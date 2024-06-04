@@ -118,6 +118,12 @@
                     }
                 },
                 {
+                    "name": "timestamptz_col",
+                    "type": {
+                        "typename": "timestamptz"
+                    }
+                },
+                {
                     "name": "fk_to_f1",
                     "type": {
                         "typename": "serial4"
@@ -132,8 +138,8 @@
             ],
             "annotations": {
                 "tag:isrd.isi.edu,2016:visible-columns" : {
-                    "compact": ["id", "int_col", "float_col", "timestamp_col", "text_col", ["faceting", "main_fk1"], ["faceting", "main_fk2"]],
-                    "entry": ["id", "int_col", "float_col", "boolean_col", "boolean_required_col", "date_col", "timestamp_col", "text_col", "markdown_col"],
+                    "compact": ["id", "int_col", "float_col", "timestamp_col", "timestamptz_col", "text_col", ["faceting", "main_fk1"], ["faceting", "main_fk2"]],
+                    "entry": ["id", "int_col", "float_col", "boolean_col", "boolean_required_col", "date_col", "timestamp_col", "timestamptz_col", "text_col", "markdown_col"],
                     "filter": {
                         "and": [
                             {"source": "id", "ux_mode": "choices"},
