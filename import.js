@@ -67,6 +67,8 @@ exports.introspect = function(options) {
  	{
 	    "catalog": {
 	    	//"id": 1  //existing id of a catalog
+        //"acls": {}, // (optional) the acls that we want to add for the catalog
+        //"alias": "" // (optional) the alias that we should add for the catalog
 	    },
 	    "schema": {
 	        "name": "product",
@@ -116,12 +118,12 @@ exports.setup = function(options) {
 
 	http.get(config.url.replace('ermrest', 'authn') + "/session").then(function(response) {
    		console.log("Valid session found");
-		return exports.createOrModifyCatalog(catalog, config.catalog.annotations, config.catalog.acls);
+		return exports.createOrModifyCatalog(catalog, undefined, config.catalog.annotations, config.catalog.acls, config.catalog.alias);
 	}, function(err) {
 		console.log("In error with no cookie:" + ((!config.authCookie) ? true : false));
 		console.log(err ? (err.message + "\n" + err.stack) : "Cannot find session");
 		if (!config.authCookie) {
-			return createOrModifyCatalog(catalog, config.catalog.annotations, config.catalog.acls);
+			return createOrModifyCatalog(catalog, undefined, config.catalog.annotations, config.catalog.acls, config.catalog.alias);
 		} else {
 			return defer.reject(err || {});
 		}
@@ -425,15 +427,18 @@ var removeTables = function(defer, catalogId, schemaName) {
  * This can also be used to modify annotations or ACLs of a catalog
  * @returns {Promise}
  * @param {Catalog} catalog either a Catalog object or an object with {id, url}
+ * @param {string=} authCookie (optional) the cookie string
  * @param {Object=} annotations (optional) the annnotation object that should be added to catalog
  * @param {Object=} acls (optional) the acls object that should be added to catalog
+ * @param {string=} alias (optional) the catalog alas
  */
-exports.createOrModifyCatalog = function(catalog, annotations, acls, authCookie) {
+exports.createOrModifyCatalog = function(catalog, authCookie, annotations, acls, alias) {
     var defer = Q.defer();
     var isNew = true;
 
     const noAnnotations = typeof annotations != 'object' || annotations == null;
     const noAcls = typeof acls != 'object' || !acls;
+    const noAlias = typeof alias !== 'string' || !alias;
 
     if (!catalog) {
         return defer.resolve(), defer.promise;
@@ -455,15 +460,14 @@ exports.createOrModifyCatalog = function(catalog, annotations, acls, authCookie)
         }
     }
 
-    if (catalog.id && noAnnotations && noAcls) {
-        console.log("Catalog with id " + catalog.id + " already exists.");
+    if (catalog.id && noAnnotations && noAcls && noAlias) {
+        console.log("Catalog with id " + catalog.id + " already exists (and didn't recieved any other params).");
         defer.resolve();
     } else {
         if (catalog.id) isNew = false;
         catalog.create().then(function() {
 
             if (isNew) console.log("Catalog created with id " + catalog.id);
-            else console.log("Catalog with id " + catalog.id + " already exists.");
 
             if (noAnnotations) {
               return false;
@@ -483,6 +487,16 @@ exports.createOrModifyCatalog = function(catalog, annotations, acls, authCookie)
         }).then(function(message) {
             if (message !== false) {
                 console.log(message || "ACLS added: " + JSON.stringify(acls));
+            }
+
+            if (noAlias) {
+              return false;
+            }
+            console.log("Updating catalog alias...");
+            return catalog.addAlias(alias);
+        }).then(function(message) {
+            if (message !== false) {
+                console.log(message || `alias '${alias}' added for the catalog.`);
             }
 
             defer.resolve();
@@ -692,13 +706,15 @@ var createForeignKeys = function(schema) {
  * {
  *  url: "the ermrest url"
  *  authCookie: "a valid webauthn cookie"
- *  catalog: {} // if you want to test on existsing schema provide `id`, it could have `acls`.
- *  schemas: { (optional)
- *    "name of schema" : {
- *      path: "path to the schema definition",
- *      entities: "path to entities folder. it should have json files with table name" (optional)
- *    }, ...
- *    // list all the schemas that you want to be created
+ *  setup: {
+ *    catalog: {} // if you want to test on existsing schema provide `id`, it could have `acls`.
+ *    schemas: { (optional)
+ *      "name of schema" : {
+ *        path: "path to the schema definition",
+ *        entities: "path to entities folder. it should have json files with table name" (optional)
+ *      }, ...
+ *     // list all the schemas that you want to be created
+ *    }
  *  }
  * }
  *
@@ -754,7 +770,7 @@ exports.createSchemasAndEntities = function (settings) {
   http.get(config.url.replace('ermrest', 'authn') + "/session").then(function(response) {
     console.log("Valid session found.");
     // create catalog or use the existing
-    return exports.createOrModifyCatalog(catalog, config.catalog.annotations, config.catalog.acls);
+    return exports.createOrModifyCatalog(catalog, undefined, config.catalog.annotations, config.catalog.acls, config.catalog.alias);
   }).then(function () {
     // append all schemas together and send a request to create them
     return createSchemas(catalog);

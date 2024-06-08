@@ -1,0 +1,12 @@
+name: Detect version change and publish to npmjs
+
+on:
+  push:
+    branches:
+      - 'master'
+
+jobs:
+  call_npm_version_check_update:
+    uses: informatics-isi-edu/isrd-github-workflows/.github/workflows/npm-publish.yml@main
+    secrets:
+      NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}

@@ -16,7 +16,8 @@ var configuration = {
 	{
 	    "catalog": { // required
 	        //"id": 1  //existing id of a catalog
-	        //"acls": {}
+	        //"acls": {}, // (optional) the acls that we want to add for the catalog
+            //"alias": "" // (optional) the alias that we should add for the catalog
 	    },
 	    "schema": { // required
 	        "name": "product",

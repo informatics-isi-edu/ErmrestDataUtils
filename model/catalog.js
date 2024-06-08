@@ -114,6 +114,28 @@ Catalog.addACL = function(url, id, aclKey, value) {
 	return defer.promise;
 };
 
+Catalog.prototype.addAlias = function(alias) {
+	return Catalog.addAlias(this.url, this.id, alias);
+};
+
+Catalog.addAlias = function (url, id, alias) {
+	return new Promise((resolve, reject) => {
+		if (typeof alias != 'string' || !alias) return resolve("No alias was defined.");
+		if (!id) return reject("No Id set : addAlias catalog function");
+
+		const data = {
+			'alias_target': id,
+			'id': alias,
+		};
+		http.post(url + '/alias',  data).then(() => {
+			resolve();
+		}).catch((err) => {
+			reject(err);
+		});
+
+	});
+}
+
 /**
  *
  * @returns {Promise} Returns a promise.
