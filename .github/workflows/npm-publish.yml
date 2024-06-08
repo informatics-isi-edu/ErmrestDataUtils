@@ -8,7 +8,7 @@ on:
 jobs:
   call_npm_version_check_update:
     uses: informatics-isi-edu/isrd-github-workflows/.github/workflows/npm-publish.yml@main
-    inputs:
+    with:
       repository-packagejson-url: 'https://github.com/informatics-isi-edu/ErmrestDataUtils/blob/master/package.json'
     secrets:
       NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
