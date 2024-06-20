@@ -9,7 +9,7 @@ class Hatrac {
   deleteVersion(file, version) {
     return new Promise((resolve, reject) => {
       if (typeof file !== 'string' || !file) return reject("'File' is not a string or is undefined");
-      if (typeof version !== 'version'|| !version) return reject("'Version' is not a string or is undefined");
+      if (typeof version !== 'string' || !version) return reject("'Version' is not a string or is undefined");
 
       http.delete(`${this.namespace}${file}:${version}`).then((response) => {
         resolve();
