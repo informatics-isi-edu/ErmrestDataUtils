@@ -3,7 +3,7 @@ var Q = require('q');
 
 var Hatrac = require('./model/hatrac.js');
 
-exports.deleteFile = (options) => {
+exports.deleteFileVersion = (options) => {
   var defer = Q.defer();
 
   var config = options;
@@ -14,10 +14,10 @@ exports.deleteFile = (options) => {
   http.defaults.headers.common.Cookie = config.authCookie || '';
 
   var hatrac = new Hatrac({
-		namespace: config.namespace
+		namespace: config.namespacePath
 	});
 
-  hatrac.deleteFile(config.file).then(() => {
+  hatrac.deleteVersion(config.file, config.version).then(() => {
     defer.resolve();
   }, (err) => {
     console.dir(err);
