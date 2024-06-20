@@ -2,11 +2,12 @@ var hatracUtils = require('./../hatrac.js');
 
 var configuration = {
   authCookie: process.env.AUTH_COOKIE,
-  namespace: 'https://dev.derivacloud.org/hatrac/js/chaise/test/'
+  namespacePath: 'https://dev.derivacloud.org/hatrac/js/chaise/test/'
 };
 
-configuration.file = 'file%207.txt';
-hatracUtils.deleteFile(configuration).then(() => {
+configuration.file = 'file%204.txt';
+configuration.version = '';
+hatracUtils.deleteFileVersion(configuration).then(() => {
   console.log("version delete");
 }, (err) => {
   console.log("Unable to delete version");
