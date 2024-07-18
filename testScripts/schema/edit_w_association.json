@@ -1,0 +1,213 @@
+{
+  "schema_name": "edit_w_association",
+  "tables": {
+    "main": {
+      "kind": "table",
+      "schema_name": "edit_w_association",
+      "table_name": "main",
+      "keys": [
+        {
+          "unique_columns": [
+            "id"
+          ]
+        },
+        {
+          "unique_columns": [
+            "col_for_association"
+          ]
+        }
+      ],
+      "column_definitions": [
+        {
+          "name": "id",
+          "nullok": false,
+          "type": {
+            "typename": "text"
+          }
+        },
+        {
+          "name": "col_for_association",
+          "type": {
+            "typename": "text"
+          }
+        }
+      ],
+      "annotations": {
+        "tag:isrd.isi.edu,2016:visible-columns": {
+          "detailed": [
+            "id", "col_for_association", "RID"
+          ]
+        }
+      }
+    },
+    "association": {
+      "kind": "table",
+      "schema_name": "edit_w_association",
+      "table_name": "association",
+      "column_definitions": [
+        {
+          "name": "id",
+          "nullok": false,
+          "type": {
+            "typename": "serial4"
+          }
+        },
+        {
+          "name": "order",
+          "default": 1,
+          "type": {
+            "typename": "int4"
+          }
+        },
+        {
+          "name": "fk_to_leaf",
+          "nullok": false,
+          "type": {
+            "typename": "text"
+          }
+        },
+        {
+          "name": "fk_to_main",
+          "nullok": false,
+          "type": {
+            "typename": "text"
+          }
+        }
+      ],
+      "keys": [
+        {
+          "unique_columns": [
+            "id"
+          ]
+        },
+        {
+          "unique_columns": [
+            "fk_to_main",
+            "fk_to_leaf"
+          ]
+        }
+      ],
+      "foreign_keys": [
+        {
+          "RID": "14-381J",
+          "foreign_key_columns": [
+            {
+              "schema_name": "edit_w_association",
+              "table_name": "association",
+              "column_name": "fk_to_leaf"
+            }
+          ],
+          "referenced_columns": [
+            {
+              "schema_name": "edit_w_association",
+              "table_name": "leaf",
+              "column_name": "col_for_association"
+            }
+          ],
+          "names": [
+            [
+              "edit_w_association",
+              "leaf_fkey"
+            ]
+          ]
+        },
+        {
+          "foreign_key_columns": [
+            {
+              "schema_name": "edit_w_association",
+              "table_name": "association",
+              "column_name": "fk_to_main"
+            }
+          ],
+          "referenced_columns": [
+            {
+              "schema_name": "edit_w_association",
+              "table_name": "main",
+              "column_name": "col_for_association"
+            }
+          ],
+          "names": [
+            [
+              "edit_w_association",
+              "main_fkey"
+            ]
+          ]
+        }
+      ],
+      "annotations": {
+        "tag:isrd.isi.edu,2016:visible-columns": {
+          "entry": [
+            "order",
+            [
+              "edit_w_association",
+              "leaf_fkey"
+            ],
+            [
+              "edit_w_association",
+              "main_fkey"
+            ]
+          ],
+          "compact": [
+            "order",
+            [
+              "edit_w_association",
+              "main_fkey"
+            ],
+            [
+              "edit_w_association",
+              "leaf_fkey"
+            ]
+          ],
+          "detailed": "compact"
+        }
+      }
+    },
+    "leaf": {
+      "kind": "table",
+      "schema_name": "edit_w_association",
+      "table_name": "leaf",
+      "keys": [
+        {
+          "unique_columns": [
+            "id"
+          ]
+        },
+        {
+          "unique_columns": [
+            "col_for_association"
+          ]
+        }
+      ],
+      "column_definitions": [
+        {
+          "name": "id",
+          "nullok": false,
+          "type": {
+            "typename": "text"
+          }
+        },
+        {
+          "name": "col_for_association",
+          "type": {
+            "typename": "text"
+          }
+        }
+      ],
+      "annotations": {
+        "tag:isrd.isi.edu,2016:table-display": {
+          "entry": {
+            "selector_ux_mode": "simple-search-dropdown"
+          },
+          "row_name": {
+            "row_markdown_pattern": "{{{col_for_association}}}"
+          }
+        },
+        "tag:isrd.isi.edu,2016:visible-columns": {
+          "compact": [
+            "id", "col_for_association"
+          ]
+        }
+      }
+    }
+  }
+}
