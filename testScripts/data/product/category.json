@@ -1,0 +1,5 @@
+[{"id":10007,"term":"Castle","type_of_facilities":"Luxury"},
+ {"id":10003,"term":"Hotel","type_of_facilities":"Upscale"},
+ {"id":10005,"term":"Motel","type_of_facilities":"Basic"},
+ {"id":10004,"term":"Ranch","type_of_facilities":"Basic"},
+ {"id":10006,"term":"Resort","type_of_facilities":"Luxury"}]
