@@ -1,7 +1,7 @@
 {
   "name": "@isrd-isi-edu/ermrest-data-utils",
   "description": "Allows you to import and export data using ERMrest",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "engines": {
     "node": ">=14.0.0",
     "npm": ">=6.0.0"
